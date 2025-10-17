@@ -215,3 +215,76 @@
   </p>
 </section>
 
+<section id="instalacao-mongodb">
+  <h2>⚙️ Instalação do MongoDB no Windows e Linux</h2>
+  <p>
+    O <strong>MongoDB</strong> pode ser instalado facilmente em diferentes sistemas operacionais. 
+    A seguir, você encontra o passo a passo para configurar o ambiente tanto no 
+    <strong>Windows</strong> quanto no <strong>Linux</strong>, garantindo que o 
+    <em>servidor</em> (<code>mongod</code>) e o <em>shell</em> (<code>mongosh</code>) funcionem corretamente.
+  </p>
+
+  <h3>🪟 Instalação no Windows</h3>
+  <ol>
+    <li>
+      Acesse o site oficial do MongoDB e baixe o <strong>MongoDB Community Server</strong>:  
+      <a href="https://www.mongodb.com/try/download/community" target="_blank">mongodb.com/try/download/community</a>.
+    </li>
+    <li>
+      Escolha o instalador <strong>MSI</strong> e siga as instruções padrão, marcando a opção 
+      <em>"Install MongoDB as a Service"</em> (para inicializar automaticamente com o Windows).
+    </li>
+    <li>
+      Após a instalação, adicione os caminhos abaixo à variável de ambiente <code>PATH</code>:
+      <ul>
+        <li><code>C:\Program Files\MongoDB\Server\8.2\bin</code></li>
+        <li><code>C:\Program Files\MongoDB\Tools\100\bin</code></li>
+        <li>Caso tenha instalado o <code>mongosh</code> separadamente, adicione também:
+          <code>C:\mongosh</code>
+        </li>
+      </ul>
+    </li>
+    <li>
+      Verifique a instalação abrindo o <strong>Prompt de Comando</strong> e digitando:
+      <pre><code>mongosh</code></pre>
+      Se tudo estiver correto, você verá a versão do MongoDB e uma conexão com <code>mongodb://127.0.0.1:27017</code>.
+    </li>
+  </ol>
+
+  <h3>🐧 Instalação no Linux (Ubuntu/Debian)</h3>
+  <ol>
+    <li>Abra o terminal e adicione a chave GPG oficial do MongoDB:</li>
+    <pre><code>curl -fsSL https://pgp.mongodb.com/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor</code></pre>
+    <li>Adicione o repositório oficial ao seu sistema:</li>
+    <pre><code>echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list</code></pre>
+    <li>Atualize os pacotes e instale o MongoDB:</li>
+    <pre><code>sudo apt update
+sudo apt install -y mongodb-org</code></pre>
+    <li>Inicie o serviço e verifique o status:</li>
+    <pre><code>sudo systemctl start mongod
+sudo systemctl status mongod</code></pre>
+    <li>Para garantir que o MongoDB inicie junto com o sistema:</li>
+    <pre><code>sudo systemctl enable mongod</code></pre>
+    <li>Teste a instalação:</li>
+    <pre><code>mongosh</code></pre>
+  </ol>
+
+  <h3>🧩 Dicas importantes</h3>
+  <ul>
+    <li>O comando <code>mongod</code> inicia o servidor do banco de dados.</li>
+    <li>O comando <code>mongosh</code> abre o shell interativo para executar consultas e comandos.</li>
+    <li>Em ambientes locais de estudo, não é necessário configurar autenticação.</li>
+    <li>Para projetos em produção, é recomendado ativar usuários e permissões com <code>mongod --auth</code>.</li>
+  </ul>
+
+  <h3>✅ Testando a instalação</h3>
+  <p>
+    Após instalar, abra o terminal e execute:
+  </p>
+  <pre><code>show dbs</code></pre>
+  <p>
+    Isso exibirá as bases de dados padrão do MongoDB, confirmando que a instalação está funcional.
+  </p>
+</section>
+
+
