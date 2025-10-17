@@ -156,3 +156,62 @@
     onde cada tipo de banco é usado conforme suas forças.
   </p>
 </section>
+
+<section id="mongodb">
+  <h2>🍃 O que é o MongoDB?</h2>
+  <p>
+    O <strong>MongoDB</strong> é um <strong>banco de dados NoSQL orientado a documentos</strong>,
+    que utiliza o formato <strong>BSON</strong> (uma variação binária do JSON) para armazenar dados.
+    Diferente dos bancos relacionais tradicionais, ele não trabalha com tabelas e colunas, mas sim com
+    <em>collections</em> (coleções) e <em>documents</em> (documentos), oferecendo alta flexibilidade na modelagem.
+  </p>
+
+  <h3>⚙️ Como o MongoDB funciona</h3>
+  <p>
+    Em vez de um esquema rígido, cada documento pode ter sua própria estrutura, o que torna o MongoDB ideal
+    para aplicações que precisam escalar rapidamente ou lidar com dados dinâmicos.  
+    Ele armazena informações de forma hierárquica, com suporte nativo a arrays e objetos aninhados.
+  </p>
+  <ul>
+    <li><strong>Database:</strong> o conjunto principal que contém coleções.</li>
+    <li><strong>Collection:</strong> similar a uma tabela, mas sem esquema fixo.</li>
+    <li><strong>Document:</strong> estrutura de dados no formato JSON que representa um registro.</li>
+  </ul>
+
+  <h3>🚀 Vantagens do MongoDB</h3>
+  <ul>
+    <li><strong>Alta flexibilidade:</strong> os documentos não precisam seguir o mesmo formato.</li>
+    <li><strong>Escalabilidade horizontal:</strong> suporta <em>sharding</em> e replicação para lidar com grandes volumes de dados.</li>
+    <li><strong>Consultas poderosas:</strong> permite filtros, agregações e buscas com operadores complexos.</li>
+    <li><strong>Alto desempenho:</strong> otimizado para leitura e escrita em tempo real.</li>
+    <li><strong>Integração com Node.js:</strong> com o <code>Mongoose</code>, a modelagem de dados se torna simples e segura.</li>
+  </ul>
+
+  <h3>📦 Quando usar MongoDB</h3>
+  <ul>
+    <li>Projetos com <strong>dados dinâmicos</strong> e estruturas variáveis.</li>
+    <li>Aplicações que exigem <strong>alta escalabilidade</strong> e disponibilidade.</li>
+    <li>Plataformas com grande volume de usuários ou <strong>dados não estruturados</strong>.</li>
+    <li>APIs modernas com <strong>Node.js</strong>, <strong>Express</strong> e <strong>Vue.js</strong>.</li>
+  </ul>
+
+  <h3>🧠 Exemplo de documento</h3>
+  <pre>
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "nome": "Leonardo",
+  "email": "leonardo@example.com",
+  "interesses": ["Kotlin", "Node.js", "MongoDB"],
+  "ativo": true,
+  "dataCadastro": "2025-10-16T00:00:00Z"
+}
+  </pre>
+
+  <h3>📎 Resumo</h3>
+  <p>
+    O <strong>MongoDB</strong> é uma excelente escolha para quem busca <em>velocidade, flexibilidade e escalabilidade</em>.
+    Ele se adapta facilmente a diferentes tipos de dados e é amplamente utilizado em aplicações modernas e distribuídas,
+    principalmente no ecossistema JavaScript.
+  </p>
+</section>
+
