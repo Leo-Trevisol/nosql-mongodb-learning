@@ -558,5 +558,177 @@ sudo systemctl status mongod</code></pre>
   </p>
 </section>
 
+<section id="comandos-basicos-mongodb">
+  <h2>💻 Principais Comandos no MongoDB (CRUD e Gerenciamento)</h2>
+  <p>
+    O <strong>MongoDB</strong> utiliza uma sintaxe simples e expressiva baseada em JavaScript, 
+    permitindo que operações sejam executadas diretamente no <em>shell</em> (<code>mongosh</code>) 
+    de forma intuitiva.  
+    A seguir, estão os principais comandos usados no dia a dia para criar bancos, coleções e 
+    manipular documentos — cobrindo todo o ciclo <strong>CRUD</strong> 
+    (<em>Create, Read, Update, Delete</em>).
+  </p>
+
+  <h3>🏦 Selecionando e criando um banco de dados</h3>
+  <p>
+    Diferente dos bancos relacionais, no MongoDB o banco de dados é criado automaticamente 
+    quando você insere o primeiro dado nele.
+  </p>
+  <pre><code>use loja</code></pre>
+  <p>
+    O comando <code>use</code> muda o contexto atual para o banco de dados especificado.
+    Se ele ainda não existir, será criado assim que um documento for inserido.
+  </p>
+
+  <h3>📁 Criando uma coleção e inserindo documentos</h3>
+  <p>
+    Uma <strong>coleção</strong> é equivalente a uma "tabela" nos bancos relacionais, 
+    mas sem esquema fixo (schema-less).
+  </p>
+
+  <h4>➡️ Inserindo um único documento</h4>
+  <pre><code>db.produtos.insertOne({
+  nome: "Notebook Lenovo",
+  preco: 3599.90,
+  estoque: 25,
+  categoria: "Informática"
+})</code></pre>
+
+  <h4>➡️ Inserindo múltiplos documentos</h4>
+  <pre><code>db.produtos.insertMany([
+  { nome: "Mouse Logitech", preco: 149.90, estoque: 100, categoria: "Periféricos" },
+  { nome: "Teclado Mecânico", preco: 299.90, estoque: 50, categoria: "Periféricos" }
+])</code></pre>
+
+  <p>
+    Cada documento inserido automaticamente recebe um identificador único 
+    chamado <code>_id</code>, gerado no formato <em>ObjectId</em>.
+  </p>
+
+  <h3>🔎 Consultando dados (Read)</h3>
+  <p>
+    O MongoDB oferece comandos poderosos para buscar documentos dentro das coleções.
+  </p>
+
+  <h4>➡️ Listar todos os documentos</h4>
+  <pre><code>db.produtos.find()</code></pre>
+
+  <h4>➡️ Buscar um único documento</h4>
+  <pre><code>db.produtos.findOne({ nome: "Mouse Logitech" })</code></pre>
+
+  <h4>➡️ Consultas com filtros e operadores</h4>
+  <pre><code>db.produtos.find({ preco: { $gt: 1000 } })</code></pre>
+  <p>
+    O exemplo acima usa o operador <code>$gt</code> (greater than) para retornar todos 
+    os produtos com preço maior que 1000.
+  </p>
+
+  <h4>➡️ Consultas com projeção (campos específicos)</h4>
+  <pre><code>db.produtos.find({}, { nome: 1, preco: 1, _id: 0 })</code></pre>
+  <p>
+    A projeção define quais campos serão exibidos.  
+    Aqui, apenas <code>nome</code> e <code>preco</code> são retornados, ocultando o <code>_id</code>.
+  </p>
+
+  <h4>➡️ Ordenação e limite de resultados</h4>
+  <pre><code>db.produtos.find().sort({ preco: -1 }).limit(5)</code></pre>
+  <p>
+    Retorna os 5 produtos mais caros (ordem decrescente).
+  </p>
+
+  <h3>🛠️ Atualizando documentos (Update)</h3>
+  <p>
+    O MongoDB permite atualizar documentos específicos com operadores como <code>$set</code>, 
+    <code>$inc</code>, <code>$unset</code> e <code>$push</code>.
+  </p>
+
+  <h4>➡️ Atualizar um único documento</h4>
+  <pre><code>db.produtos.updateOne(
+  { nome: "Mouse Logitech" },
+  { $set: { preco: 159.90 } }
+)</code></pre>
+
+  <h4>➡️ Atualizar múltiplos documentos</h4>
+  <pre><code>db.produtos.updateMany(
+  { categoria: "Periféricos" },
+  { $inc: { estoque: 10 } }
+)</code></pre>
+  <p>
+    Aqui, o operador <code>$inc</code> aumenta o campo <code>estoque</code> em 10 unidades 
+    para todos os produtos da categoria "Periféricos".
+  </p>
+
+  <h4>➡️ Removendo um campo de um documento</h4>
+  <pre><code>db.produtos.updateOne(
+  { nome: "Notebook Lenovo" },
+  { $unset: { categoria: "" } }
+)</code></pre>
+  <p>
+    O operador <code>$unset</code> remove o campo <code>categoria</code> do documento.
+  </p>
+
+  <h3>🗑️ Deletando documentos (Delete)</h3>
+  <p>
+    Para excluir dados, use os comandos <code>deleteOne()</code> ou <code>deleteMany()</code>.
+  </p>
+
+  <h4>➡️ Deletar um único documento</h4>
+  <pre><code>db.produtos.deleteOne({ nome: "Teclado Mecânico" })</code></pre>
+
+  <h4>➡️ Deletar múltiplos documentos</h4>
+  <pre><code>db.produtos.deleteMany({ categoria: "Periféricos" })</code></pre>
+
+  <p>
+    Cuidado ao usar <code>deleteMany()</code> sem filtro — isso removerá todos os documentos da coleção.
+  </p>
+
+  <h3>📚 Gerenciando coleções e bancos</h3>
+  <ul>
+    <li><code>show dbs</code> — lista todos os bancos de dados existentes.</li>
+    <li><code>show collections</code> — lista todas as coleções do banco atual.</li>
+    <li><code>db.dropDatabase()</code> — remove completamente o banco de dados atual.</li>
+    <li><code>db.minhaColecao.drop()</code> — exclui apenas uma coleção específica.</li>
+  </ul>
+
+  <h3>💡 Dica avançada</h3>
+  <p>
+    É possível combinar filtros, projeções e ordenações em uma única consulta:
+  </p>
+  <pre><code>db.produtos.find(
+  { preco: { $gt: 1000 }, estoque: { $lte: 50 } },
+  { nome: 1, preco: 1 }
+).sort({ preco: 1 }).limit(3)</code></pre>
+  <p>
+    Esse comando retorna até 3 produtos com preço maior que 1000 e estoque menor ou igual a 50, 
+    exibindo apenas <code>nome</code> e <code>preco</code>, ordenados pelo preço em ordem crescente.
+  </p>
+
+  <h3>🧾 Resumo rápido</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Função</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>use nomeBanco</code></td><td>Seleciona ou cria um banco de dados</td></tr>
+      <tr><td><code>db.createCollection("nome")</code></td><td>Cria uma nova coleção</td></tr>
+      <tr><td><code>db.colecao.insertOne({...})</code></td><td>Insere um documento</td></tr>
+      <tr><td><code>db.colecao.find()</code></td><td>Lista documentos</td></tr>
+      <tr><td><code>db.colecao.findOne({...})</code></td><td>Busca um único documento</td></tr>
+      <tr><td><code>db.colecao.updateOne({...}, {...})</code></td><td>Atualiza um documento</td></tr>
+      <tr><td><code>db.colecao.deleteOne({...})</code></td><td>Remove um documento</td></tr>
+      <tr><td><code>show dbs</code></td><td>Lista bancos de dados</td></tr>
+      <tr><td><code>show collections</code></td><td>Lista coleções</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Esses são os comandos essenciais para dominar o <strong>MongoDB</strong>.  
+    Com eles, você já consegue criar, consultar, atualizar e excluir dados em qualquer aplicação.
+  </p>
+</section>
+
 
 
