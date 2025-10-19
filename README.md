@@ -402,4 +402,161 @@ sudo systemctl status mongod</code></pre>
   </p>
 </section>
 
+<section id="bson-mongodb">
+  <h2>📦 Estrutura de Dados BSON no MongoDB</h2>
+  <p>
+    O <strong>BSON</strong> (Binary JSON) é o formato utilizado internamente pelo 
+    <strong>MongoDB</strong> para armazenar e transmitir documentos.  
+    Ele é uma representação binária do formato <em>JSON</em> tradicional, projetado para ser 
+    <strong>mais eficiente em armazenamento, velocidade e tipagem</strong>.
+  </p>
+
+  <h3>🧠 O que é o BSON?</h3>
+  <p>
+    O BSON (abreviação de <em>Binary JSON</em>) é uma forma binária de codificar documentos 
+    semelhantes ao JSON.  
+    Enquanto o JSON é ótimo para leitura humana, o BSON foi criado para ser processado 
+    rapidamente por máquinas, permitindo que o MongoDB leia e grave dados de forma 
+    muito mais eficiente.
+  </p>
+  <p>
+    Ele suporta todos os tipos de dados do JSON, como <code>string</code>, <code>boolean</code>, 
+    <code>number</code> e <code>array</code>, mas também adiciona outros tipos que o JSON 
+    puro não possui, como <code>Date</code>, <code>ObjectId</code>, <code>Decimal128</code>, 
+    <code>Binary</code>, entre outros.
+  </p>
+
+  <h3>🧩 Estrutura básica de um documento BSON</h3>
+  <pre><code>{
+  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "nome": "João Pereira",
+  "idade": 30,
+  "ativo": true,
+  "data_cadastro": ISODate("2025-10-19T15:30:00Z"),
+  "compras": [ "notebook", "mouse", "teclado" ],
+  "saldo": NumberDecimal("2599.99")
+}</code></pre>
+
+  <p>
+    Nesse exemplo, é possível observar tipos de dados que não existem no JSON padrão, 
+    como <code>ObjectId</code>, <code>ISODate</code> e <code>NumberDecimal</code>.
+  </p>
+
+  <h3>🔍 Principais Tipos de Dados do BSON</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Tipo BSON</th>
+        <th>Descrição</th>
+        <th>Exemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>String</code></td>
+        <td>Texto padrão.</td>
+        <td><code>"nome": "Maria"</code></td>
+      </tr>
+      <tr>
+        <td><code>Int32 / Int64</code></td>
+        <td>Números inteiros de 32 ou 64 bits.</td>
+        <td><code>"idade": 25</code></td>
+      </tr>
+      <tr>
+        <td><code>Double</code></td>
+        <td>Números decimais com precisão dupla.</td>
+        <td><code>"preco": 49.99</code></td>
+      </tr>
+      <tr>
+        <td><code>Boolean</code></td>
+        <td>Valores lógicos <code>true</code> ou <code>false</code>.</td>
+        <td><code>"ativo": true</code></td>
+      </tr>
+      <tr>
+        <td><code>Date</code></td>
+        <td>Data/hora no formato ISO.</td>
+        <td><code>"data": ISODate("2025-10-19T00:00:00Z")</code></td>
+      </tr>
+      <tr>
+        <td><code>ObjectId</code></td>
+        <td>Identificador único de 12 bytes gerado automaticamente.</td>
+        <td><code>"_id": ObjectId("507f1f77bcf86cd799439011")</code></td>
+      </tr>
+      <tr>
+        <td><code>Array</code></td>
+        <td>Lista de valores ou objetos.</td>
+        <td><code>"itens": [ "teclado", "mouse" ]</code></td>
+      </tr>
+      <tr>
+        <td><code>Document</code></td>
+        <td>Documento aninhado dentro de outro documento.</td>
+        <td><code>"endereco": { "cidade": "Curitiba", "uf": "PR" }</code></td>
+      </tr>
+      <tr>
+        <td><code>Binary</code></td>
+        <td>Armazena dados binários (como imagens, arquivos ou hashes).</td>
+        <td><code>"arquivo": BinData(0, "4f5a...")</code></td>
+      </tr>
+      <tr>
+        <td><code>Decimal128</code></td>
+        <td>Tipo decimal de alta precisão (usado em valores financeiros).</td>
+        <td><code>"saldo": NumberDecimal("10234.56")</code></td>
+      </tr>
+      <tr>
+        <td><code>Null</code></td>
+        <td>Representa um valor nulo.</td>
+        <td><code>"telefone": null</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>⚡ Vantagens do BSON</h3>
+  <ul>
+    <li><strong>Maior eficiência</strong>: leitura e escrita binária são mais rápidas que JSON puro.</li>
+    <li><strong>Mais tipos de dados</strong>: suporte a tipos avançados como <code>Date</code> e <code>ObjectId</code>.</li>
+    <li><strong>Compactação binária</strong>: ocupa menos espaço em disco.</li>
+    <li><strong>Integração direta com o MongoDB</strong>: o servidor armazena e envia dados diretamente nesse formato.</li>
+  </ul>
+
+  <h3>🧾 Comparação JSON x BSON</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Aspecto</th>
+        <th>JSON</th>
+        <th>BSON</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Formato</td>
+        <td>Texto legível por humanos</td>
+        <td>Binário legível por máquina</td>
+      </tr>
+      <tr>
+        <td>Tipos de dados</td>
+        <td>Limitados (string, number, boolean, array, object)</td>
+        <td>Ricos (ObjectId, Date, Binary, Decimal128...)</td>
+      </tr>
+      <tr>
+        <td>Velocidade de leitura/gravação</td>
+        <td>Mais lenta</td>
+        <td>Mais rápida</td>
+      </tr>
+      <tr>
+        <td>Uso principal</td>
+        <td>APIs e transferência de dados</td>
+        <td>Armazenamento e consulta em MongoDB</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Em resumo, o <strong>BSON</strong> é o que torna o <strong>MongoDB</strong> tão eficiente, 
+    pois combina a simplicidade do <em>JSON</em> com o desempenho e a riqueza de tipos 
+    necessários para bancos de dados modernos e escaláveis.
+  </p>
+</section>
+
+
 
