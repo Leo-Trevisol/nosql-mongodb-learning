@@ -286,5 +286,120 @@ sudo systemctl status mongod</code></pre>
     Isso exibirá as bases de dados padrão do MongoDB, confirmando que a instalação está funcional.
   </p>
 </section>
+<section id="entidades-mongodb">
+  <h2>🏗️ Principais Entidades de um Banco de Dados Não Relacional</h2>
+  <p>
+    Diferente dos bancos relacionais que utilizam tabelas, colunas e linhas, os bancos 
+    <strong>não relacionais</strong> (como o <strong>MongoDB</strong>) são orientados a 
+    <em>documentos</em> e oferecem uma estrutura mais flexível e escalável.  
+    Abaixo estão as principais entidades que compõem esse tipo de banco.
+  </p>
+
+  <h3>🗃️ Database (Banco de Dados)</h3>
+  <p>
+    É o conjunto principal que armazena todas as informações de um sistema ou aplicação.  
+    Cada <strong>database</strong> contém diversas <em>collections</em> e funciona de forma 
+    independente.  
+    Exemplo: <code>loja_virtual</code>, <code>usuarios</code>, <code>estoque</code>.
+  </p>
+
+  <h3>📂 Collection (Coleção)</h3>
+  <p>
+    Uma <strong>collection</strong> é equivalente a uma <em>tabela</em> em bancos relacionais, 
+    mas com uma diferença importante: ela não impõe um esquema fixo para os dados.  
+    Cada documento dentro de uma collection pode conter campos diferentes, o que garante 
+    flexibilidade ao modelo de dados.
+  </p>
+  <p><strong>Exemplo:</strong> Uma collection <code>clientes</code> pode conter documentos com diferentes estruturas de campos.</p>
+
+  <h3>📄 Document (Documento)</h3>
+  <p>
+    O <strong>documento</strong> é a unidade básica de armazenamento no MongoDB, representado em 
+    formato <em>JSON</em> (ou <em>BSON</em> — Binary JSON).  
+    Ele armazena dados em pares <code>chave: valor</code> e é identificado por um campo 
+    <code>_id</code> único.
+  </p>
+
+  <pre><code>{
+  "_id": "507f1f77bcf86cd799439011",
+  "nome": "Maria Silva",
+  "idade": 28,
+  "email": "maria.silva@email.com",
+  "endereco": {
+    "rua": "Rua das Flores, 123",
+    "cidade": "São Paulo"
+  }
+}</code></pre>
+
+  <p>
+    O campo <code>_id</code> é gerado automaticamente e garante que cada documento seja 
+    identificado de forma única dentro da coleção.
+  </p>
+
+  <h3>🔑 Field (Campo)</h3>
+  <p>
+    Os <strong>fields</strong> são os pares <code>chave: valor</code> dentro de um documento.  
+    Eles representam as informações específicas de cada item armazenado, como 
+    <code>nome</code>, <code>idade</code> e <code>email</code>.  
+    Um documento pode conter campos de diversos tipos: texto, número, objeto, array, booleano, etc.
+  </p>
+
+  <h3>⚡ Index (Índice)</h3>
+  <p>
+    Os <strong>índices</strong> melhoram o desempenho de buscas e consultas em grandes coleções.  
+    É possível criar índices em um ou mais campos:
+  </p>
+  <pre><code>db.clientes.createIndex({ "email": 1 })</code></pre>
+  <p>
+    Isso permite localizar documentos rapidamente com base no campo <code>email</code>.
+  </p>
+
+  <h3>📊 Comparativo com Bancos Relacionais</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Conceito SQL (Relacional)</th>
+        <th>Conceito MongoDB (Não Relacional)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Database</td>
+        <td>Database</td>
+      </tr>
+      <tr>
+        <td>Table</td>
+        <td>Collection</td>
+      </tr>
+      <tr>
+        <td>Row</td>
+        <td>Document</td>
+      </tr>
+      <tr>
+        <td>Column</td>
+        <td>Field</td>
+      </tr>
+      <tr>
+        <td>Primary Key</td>
+        <td>_id</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>💡 Resumo</h3>
+  <ul>
+    <li><strong>Database</strong>: Armazena várias coleções.</li>
+    <li><strong>Collection</strong>: Agrupa documentos relacionados.</li>
+    <li><strong>Document</strong>: Unidade de dados em formato JSON/BSON.</li>
+    <li><strong>Field</strong>: Par chave-valor dentro de um documento.</li>
+    <li><strong>Index</strong>: Otimiza consultas e buscas.</li>
+  </ul>
+
+  <p>
+    Essa estrutura flexível é o que torna o <strong>MongoDB</strong> ideal para aplicações 
+    modernas, que precisam lidar com grandes volumes de dados e modelos que evoluem 
+    rapidamente sem depender de esquemas rígidos.
+  </p>
+</section>
 
 
