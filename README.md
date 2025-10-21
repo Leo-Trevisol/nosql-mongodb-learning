@@ -636,6 +636,21 @@ sudo systemctl status mongod</code></pre>
     Retorna os 5 produtos mais caros (ordem decrescente).
   </p>
 
+  <h4>✨ Formatando a saída com <code>pretty()</code></h4>
+  <p>
+    Por padrão, o comando <code>find()</code> retorna os resultados em uma única linha,
+    o que pode dificultar a leitura de documentos mais complexos.  
+    Para exibir os dados de forma organizada e indentada, basta usar o método <code>pretty()</code>:
+  </p>
+  <pre><code>db.produtos.find().pretty()</code></pre>
+  <p>
+    Esse comando formata a saída no terminal, exibindo cada campo em uma nova linha com recuo, 
+    facilitando a visualização de documentos JSON grandes ou aninhados.  
+    É especialmente útil durante consultas e depuração.
+  </p>
+  <p><strong>Dica:</strong> o <code>pretty()</code> funciona apenas no shell do MongoDB 
+  (como o <em>mongosh</em>) e não afeta o resultado retornado via driver ou aplicação.</p>
+
   <h3>🛠️ Atualizando documentos (Update)</h3>
   <p>
     O MongoDB permite atualizar documentos específicos com operadores como <code>$set</code>, 
@@ -716,6 +731,7 @@ sudo systemctl status mongod</code></pre>
       <tr><td><code>db.createCollection("nome")</code></td><td>Cria uma nova coleção</td></tr>
       <tr><td><code>db.colecao.insertOne({...})</code></td><td>Insere um documento</td></tr>
       <tr><td><code>db.colecao.find()</code></td><td>Lista documentos</td></tr>
+      <tr><td><code>db.colecao.find().pretty()</code></td><td>Lista documentos com formatação legível</td></tr>
       <tr><td><code>db.colecao.findOne({...})</code></td><td>Busca um único documento</td></tr>
       <tr><td><code>db.colecao.updateOne({...}, {...})</code></td><td>Atualiza um documento</td></tr>
       <tr><td><code>db.colecao.deleteOne({...})</code></td><td>Remove um documento</td></tr>
