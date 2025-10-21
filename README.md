@@ -882,4 +882,109 @@ run().catch(console.dir);
   </p>
 </section>
 
+<section id="createcollection-mongodb">
+  <h2>🧱 Criando Coleções com <code>createCollection()</code></h2>
+  <p>
+    No <strong>MongoDB</strong>, as coleções são criadas automaticamente quando você insere o primeiro 
+    documento com o comando <code>insertOne()</code> ou <code>insertMany()</code>.  
+    No entanto, também é possível criar coleções manualmente com o comando 
+    <code>db.createCollection()</code>, o que oferece mais controle sobre a estrutura e comportamento da coleção.
+  </p>
+
+  <h3>📦 Sintaxe básica</h3>
+  <pre><code>db.createCollection("nomeDaColecao")</code></pre>
+  <p>
+    Esse comando cria uma nova coleção vazia chamada <code>nomeDaColecao</code>.  
+    Se a coleção já existir, o MongoDB retornará um erro informando que ela já foi criada.
+  </p>
+
+  <h3>⚙️ Criando coleções com opções avançadas</h3>
+  <p>
+    O <code>createCollection()</code> também permite definir parâmetros opcionais, como limite de tamanho, 
+    número máximo de documentos e se será uma <strong>coleção circular (capped)</strong>.
+  </p>
+
+  <h4>➡️ Exemplo com opções</h4>
+  <pre><code>db.createCollection("logs", {
+  capped: true,
+  size: 5242880,  // 5 MB
+  max: 5000
+})</code></pre>
+  <p>
+    Nesse exemplo:
+  </p>
+  <ul>
+    <li><code>capped: true</code> — cria uma <strong>coleção limitada</strong> em tamanho fixo.</li>
+    <li><code>size</code> — define o tamanho máximo da coleção (em bytes).</li>
+    <li><code>max</code> — define o número máximo de documentos permitidos.</li>
+  </ul>
+  <p>
+    Quando o limite é atingido, os documentos mais antigos são automaticamente sobrescritos — ideal para logs e monitoramento.
+  </p>
+
+  <h3>🔍 Verificando coleções criadas</h3>
+  <pre><code>show collections</code></pre>
+  <p>
+    Exibe todas as coleções existentes no banco de dados atual.
+  </p>
+
+  <h3>🧾 Exemplo prático completo</h3>
+  <p>
+    Abaixo está um exemplo prático que cria uma coleção chamada <code>usuarios</code> 
+    e em seguida insere um documento:
+  </p>
+  <pre><code>use empresa
+
+db.createCollection("usuarios")
+
+db.usuarios.insertOne({
+  nome: "Leonardo",
+  cargo: "Desenvolvedor",
+  ativo: true,
+  dataCadastro: new Date()
+})</code></pre>
+  <p>
+    Após isso, a coleção <code>usuarios</code> estará disponível para consultas:
+  </p>
+  <pre><code>db.usuarios.find().pretty()</code></pre>
+
+  <h3>🚫 Quando <strong>não</strong> usar <code>createCollection()</code></h3>
+  <ul>
+    <li>Na maioria dos casos, o MongoDB cria coleções automaticamente ao inserir o primeiro documento.</li>
+    <li>Use <code>createCollection()</code> apenas quando precisar definir <em>opções específicas</em> (como capped collections).</li>
+    <li>Evite criar coleções vazias desnecessárias, pois isso pode aumentar a complexidade do gerenciamento.</li>
+  </ul>
+
+  <h3>🧩 Dica</h3>
+  <p>
+    É possível verificar as informações detalhadas de uma coleção (como tamanho e número de documentos) com:
+  </p>
+  <pre><code>db.nomeDaColecao.stats()</code></pre>
+  <p>
+    Isso retorna dados úteis sobre armazenamento, índices e estatísticas internas.
+  </p>
+
+  <h3>📚 Resumo rápido</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>db.createCollection("nome")</code></td><td>Cria uma nova coleção vazia</td></tr>
+      <tr><td><code>db.createCollection("logs", { capped: true, size: 10000 })</code></td><td>Cria uma coleção com tamanho e limite definidos</td></tr>
+      <tr><td><code>show collections</code></td><td>Lista coleções existentes</td></tr>
+      <tr><td><code>db.nomeDaColecao.stats()</code></td><td>Exibe informações detalhadas da coleção</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Assim, o comando <code>createCollection()</code> é uma ferramenta poderosa para 
+    criar coleções sob medida, especialmente em cenários de performance e controle de dados.
+  </p>
+</section>
+
+
 
