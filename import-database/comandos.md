@@ -49,3 +49,12 @@ db.dados.find({})
 mongoexport -c dados -d novoBanco -o novoBanco.json
 
 mongoimport novoBanco.json -d novoBancoDois -c novosdados
+
+
+# snippet que remove os bancos rapidamente
+
+Mongo().getDBNames().forEach(function(db){
+    if(['admin', 'config', 'local'].indexOf(db) < 0){
+        Mongo().getDB(db).dropDatabase();
+    }
+});
