@@ -1177,3 +1177,152 @@ mongoimport novoBanco.json -d novoBancoDois -c novosdados</code></pre>
   </p>
 </section>
 
+<section id="insercao-dados-mongodb">
+  <h2>🧩 Inserção de Dados no MongoDB (Create)</h2>
+  <p>
+    A inserção de dados é a primeira etapa do ciclo <strong>CRUD</strong> — sigla para 
+    <em>Create, Read, Update e Delete</em> — e representa o momento em que novos 
+    documentos são adicionados ao banco de dados.
+    No <strong>MongoDB</strong>, essa operação é extremamente flexível e intuitiva, 
+    pois os dados são armazenados em formato <strong>JSON (BSON internamente)</strong>, 
+    sem necessidade de esquemas fixos como em bancos relacionais.
+  </p>
+
+  <h3>📘 Tudo é documento</h3>
+  <p>
+    No MongoDB, cada registro armazenado é chamado de <strong>documento</strong>.  
+    Ele é composto por pares <code>chave: valor</code> e pertence a uma 
+    <strong>coleção</strong> (que equivale a uma tabela em bancos SQL).
+  </p>
+  <pre><code>{
+  "nome": "João Silva",
+  "idade": 29,
+  "email": "joao.silva@example.com",
+  "ativo": true
+}</code></pre>
+  <p>
+    Como o MongoDB é <em>schema-less</em>, os documentos de uma mesma coleção podem 
+    ter estruturas diferentes — ou seja, campos opcionais e até tipos variados são aceitos.
+  </p>
+
+  <h3>🧠 Inserindo dados no banco</h3>
+  <p>
+    Antes de inserir, selecione ou crie o banco de dados com o comando:
+  </p>
+  <pre><code>use loja</code></pre>
+  <p>
+    Em seguida, você pode inserir um documento de forma simples com o método 
+    <code>insertOne()</code>:
+  </p>
+  <pre><code>db.produtos.insertOne({
+  nome: "Notebook Lenovo",
+  preco: 3599.90,
+  estoque: 25,
+  categoria: "Informática"
+})</code></pre>
+  <p>
+    Esse comando cria automaticamente a coleção <code>produtos</code> (caso não exista) 
+    e insere o documento.  
+    Após a execução, o MongoDB gera um campo especial chamado <code>_id</code>, 
+    que funciona como identificador único do documento.
+  </p>
+
+  <h3>🔢 Inserindo vários documentos</h3>
+  <p>
+    Para inserir múltiplos registros de uma só vez, usamos o método 
+    <code>insertMany()</code>:
+  </p>
+  <pre><code>db.produtos.insertMany([
+  { nome: "Mouse Logitech", preco: 149.90, estoque: 100, categoria: "Periféricos" },
+  { nome: "Teclado Mecânico", preco: 299.90, estoque: 50, categoria: "Periféricos" },
+  { nome: "Monitor Samsung", preco: 1299.00, estoque: 20, categoria: "Monitores" }
+])</code></pre>
+  <p>
+    Esse comando é ideal para <strong>importar grandes volumes de dados</strong> 
+    ou popular o banco rapidamente durante o desenvolvimento.
+  </p>
+
+  <h3>🆔 Alterando o identificador (<code>_id</code>)</h3>
+  <p>
+    Todo documento no MongoDB possui um campo <code>_id</code> obrigatório e único.  
+    Por padrão, ele é gerado automaticamente no formato <em>ObjectId</em>, 
+    mas você pode definir manualmente esse valor:
+  </p>
+  <pre><code>db.produtos.insertOne({
+  _id: "notebook-lenovo",
+  nome: "Notebook Lenovo",
+  preco: 3599.90
+})</code></pre>
+  <p>
+    ⚠️ Caso tente inserir outro documento com o mesmo <code>_id</code>, 
+    o MongoDB retornará um erro de chave duplicada.
+  </p>
+
+  <h3>⚙️ O método <code>insert()</code> (versão antiga)</h3>
+  <p>
+    O método <code>insert()</code> foi usado em versões anteriores do MongoDB 
+    para inserir um ou vários documentos, mas foi substituído por 
+    <code>insertOne()</code> e <code>insertMany()</code> para dar mais clareza e controle.  
+    Ainda assim, ele continua funcional em muitos ambientes:
+  </p>
+  <pre><code>db.usuarios.insert([
+  { nome: "Ana", idade: 25 },
+  { nome: "Carlos", idade: 32 }
+])</code></pre>
+
+  <h3>🔐 Write Concern</h3>
+  <p>
+    O <strong>Write Concern</strong> define o nível de confirmação que o MongoDB 
+    deve exigir ao gravar dados.  
+    Ele garante integridade e controle sobre como as operações de escrita 
+    são reconhecidas pelo servidor.
+  </p>
+  <p>Os principais níveis são:</p>
+  <ul>
+    <li><code>w: 0</code> — não aguarda confirmação (melhor desempenho, menos segurança).</li>
+    <li><code>w: 1</code> — confirmação após escrita no nó primário (padrão).</li>
+    <li><code>w: "majority"</code> — confirmação após gravação na maioria dos nós do cluster.</li>
+  </ul>
+  <pre><code>db.produtos.insertOne(
+  { nome: "Headset HyperX", preco: 499.90 },
+  { writeConcern: { w: "majority" } }
+)</code></pre>
+  <p>
+    Essa configuração é essencial em ambientes distribuídos (replicasets), 
+    garantindo que os dados estejam realmente persistidos antes da confirmação.
+  </p>
+
+  <h3>💡 Boas práticas e dicas</h3>
+  <ul>
+    <li>Evite inserir documentos muito grandes — o limite é de 16 MB por documento.</li>
+    <li>Prefira usar <code>insertMany()</code> para inserções em lote, pois é mais performático.</li>
+    <li>Use identificadores personalizados (<code>_id</code>) apenas quando necessário.</li>
+    <li>Valide campos importantes na aplicação antes de enviar para o banco.</li>
+  </ul>
+
+  <h3>🧾 Resumo dos principais comandos de inserção</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>db.colecao.insertOne({...})</code></td><td>Insere um único documento</td></tr>
+      <tr><td><code>db.colecao.insertMany([...])</code></td><td>Insere múltiplos documentos</td></tr>
+      <tr><td><code>db.colecao.insert([...])</code></td><td>Método legado (insere um ou mais)</td></tr>
+      <tr><td><code>_id</code></td><td>Identificador único de cada documento</td></tr>
+      <tr><td><code>writeConcern</code></td><td>Define o nível de segurança da escrita</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Dominar a inserção de dados no MongoDB é fundamental para qualquer desenvolvedor 
+    que deseje compreender a base do modelo orientado a documentos.  
+    A flexibilidade do <strong>MongoDB</strong> torna essa etapa simples e poderosa, 
+    permitindo estruturar dados de forma natural e escalável.
+  </p>
+</section>
+
+
