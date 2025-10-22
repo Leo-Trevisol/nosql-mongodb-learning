@@ -705,6 +705,39 @@ sudo systemctl status mongod</code></pre>
     <li><code>db.minhaColecao.drop()</code> — exclui apenas uma coleção específica.</li>
   </ul>
 
+  <h3>📊 Monitorando o desempenho com <code>mongostat</code></h3>
+  <p>
+    O comando <code>mongostat</code> é uma ferramenta de monitoramento em tempo real do MongoDB.  
+    Ele exibe estatísticas dinâmicas sobre o uso do banco, como número de operações por segundo,  
+    uso de memória, conexões ativas e leituras/escritas.  
+  </p>
+
+  <h4>➡️ Exemplo de uso</h4>
+  <pre><code>mongostat</code></pre>
+
+  <p>
+    Ao executar esse comando no terminal (com o serviço <code>mongod</code> em execução), 
+    você verá uma tabela atualizada a cada segundo com informações como:
+  </p>
+  <ul>
+    <li><strong>insert</strong> — número de inserções por segundo.</li>
+    <li><strong>query</strong> — número de consultas realizadas.</li>
+    <li><strong>update</strong> — atualizações por segundo.</li>
+    <li><strong>delete</strong> — exclusões realizadas.</li>
+    <li><strong>conn</strong> — quantidade de conexões ativas.</li>
+    <li><strong>vsize</strong> — memória virtual utilizada.</li>
+    <li><strong>netIn / netOut</strong> — tráfego de entrada e saída de rede.</li>
+  </ul>
+
+  <h4>📈 Exemplo de saída simplificada:</h4>
+  <pre><code>insert query update delete conn    vsize    netIn   netOut
+     5     2      1      0    10   1.2G     10kB     8kB</code></pre>
+
+  <p>
+    O <code>mongostat</code> é muito útil para diagnosticar gargalos e analisar o comportamento 
+    do banco de dados sob carga, sendo amplamente utilizado em ambientes de produção e testes de desempenho.
+  </p>
+
   <h3>💡 Dica avançada</h3>
   <p>
     É possível combinar filtros, projeções e ordenações em uma única consulta:
@@ -737,12 +770,13 @@ sudo systemctl status mongod</code></pre>
       <tr><td><code>db.colecao.deleteOne({...})</code></td><td>Remove um documento</td></tr>
       <tr><td><code>show dbs</code></td><td>Lista bancos de dados</td></tr>
       <tr><td><code>show collections</code></td><td>Lista coleções</td></tr>
+      <tr><td><code>mongostat</code></td><td>Exibe estatísticas em tempo real do servidor MongoDB</td></tr>
     </tbody>
   </table>
 
   <p>
     Esses são os comandos essenciais para dominar o <strong>MongoDB</strong>.  
-    Com eles, você já consegue criar, consultar, atualizar e excluir dados em qualquer aplicação.
+    Com eles, você já consegue criar, consultar, atualizar, excluir e monitorar dados em qualquer aplicação.
   </p>
 </section>
 
