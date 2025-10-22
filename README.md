@@ -705,6 +705,39 @@ sudo systemctl status mongod</code></pre>
     <li><code>db.minhaColecao.drop()</code> — exclui apenas uma coleção específica.</li>
   </ul>
 
+  <h3>📊 Monitorando o desempenho com <code>mongostat</code></h3>
+  <p>
+    O comando <code>mongostat</code> é uma ferramenta de monitoramento em tempo real do MongoDB.  
+    Ele exibe estatísticas dinâmicas sobre o uso do banco, como número de operações por segundo,  
+    uso de memória, conexões ativas e leituras/escritas.  
+  </p>
+
+  <h4>➡️ Exemplo de uso</h4>
+  <pre><code>mongostat</code></pre>
+
+  <p>
+    Ao executar esse comando no terminal (com o serviço <code>mongod</code> em execução), 
+    você verá uma tabela atualizada a cada segundo com informações como:
+  </p>
+  <ul>
+    <li><strong>insert</strong> — número de inserções por segundo.</li>
+    <li><strong>query</strong> — número de consultas realizadas.</li>
+    <li><strong>update</strong> — atualizações por segundo.</li>
+    <li><strong>delete</strong> — exclusões realizadas.</li>
+    <li><strong>conn</strong> — quantidade de conexões ativas.</li>
+    <li><strong>vsize</strong> — memória virtual utilizada.</li>
+    <li><strong>netIn / netOut</strong> — tráfego de entrada e saída de rede.</li>
+  </ul>
+
+  <h4>📈 Exemplo de saída simplificada:</h4>
+  <pre><code>insert query update delete conn    vsize    netIn   netOut
+     5     2      1      0    10   1.2G     10kB     8kB</code></pre>
+
+  <p>
+    O <code>mongostat</code> é muito útil para diagnosticar gargalos e analisar o comportamento 
+    do banco de dados sob carga, sendo amplamente utilizado em ambientes de produção e testes de desempenho.
+  </p>
+
   <h3>💡 Dica avançada</h3>
   <p>
     É possível combinar filtros, projeções e ordenações em uma única consulta:
@@ -737,12 +770,13 @@ sudo systemctl status mongod</code></pre>
       <tr><td><code>db.colecao.deleteOne({...})</code></td><td>Remove um documento</td></tr>
       <tr><td><code>show dbs</code></td><td>Lista bancos de dados</td></tr>
       <tr><td><code>show collections</code></td><td>Lista coleções</td></tr>
+      <tr><td><code>mongostat</code></td><td>Exibe estatísticas em tempo real do servidor MongoDB</td></tr>
     </tbody>
   </table>
 
   <p>
     Esses são os comandos essenciais para dominar o <strong>MongoDB</strong>.  
-    Com eles, você já consegue criar, consultar, atualizar e excluir dados em qualquer aplicação.
+    Com eles, você já consegue criar, consultar, atualizar, excluir e monitorar dados em qualquer aplicação.
   </p>
 </section>
 
@@ -986,5 +1020,160 @@ db.usuarios.insertOne({
   </p>
 </section>
 
+<section id="import-export-mongodb">
+  <h2>📤📥 Importação e Exportação de Dados no MongoDB</h2>
 
+  <p>
+    O <strong>MongoDB</strong> oferece ferramentas de linha de comando muito úteis para importar e exportar dados entre bancos e coleções.  
+    Essas operações são essenciais para <strong>backup, migração e integração</strong> de dados entre ambientes (como desenvolvimento, teste e produção).
+  </p>
+
+  <h3>📚 Principais ferramentas</h3>
+  <ul>
+    <li><strong><code>mongoimport</code></strong> — importa dados de arquivos JSON, CSV ou TSV para uma coleção.</li>
+    <li><strong><code>mongoexport</code></strong> — exporta os dados de uma coleção para um arquivo JSON ou CSV.</li>
+    <li><strong><code>mongodump</code></strong> — realiza backup completo de um banco de dados ou de várias coleções (formato binário BSON).</li>
+    <li><strong><code>mongorestore</code></strong> — restaura backups criados pelo <code>mongodump</code>.</li>
+  </ul>
+
+  <hr>
+
+  <h3>🛠️ 1. Criando dados de exemplo</h3>
+  <pre><code>db.salarios.insertOne({nome: "Matheus", salario: 4000})
+db.salarios.insertOne({nome: "João", salario: 6500})
+
+db.salarios.find()
+show collections
+</code></pre>
+  <p>
+    Esses comandos criam a coleção <code>salarios</code> e inserem dois registros para testes.
+  </p>
+
+  <hr>
+
+  <h3>⬆️ 2. Exportando dados com <code>mongoexport</code></h3>
+  <p>
+    O comando <code>mongoexport</code> exporta os dados de uma coleção para um arquivo externo.  
+    Ele é útil para gerar backups em formato JSON ou para migrar dados entre bancos.
+  </p>
+
+  <pre><code>mongoexport -c books -d booksData -o booksExample.json</code></pre>
+
+  <p>📄 Explicação:</p>
+  <ul>
+    <li><code>-c books</code> — define a coleção que será exportada.</li>
+    <li><code>-d booksData</code> — nome do banco de dados.</li>
+    <li><code>-o booksExample.json</code> — nome do arquivo de saída.</li>
+  </ul>
+
+  <p>✅ Resultado: um arquivo <code>booksExample.json</code> contendo todos os documentos da coleção <code>books</code>.</p>
+
+  <hr>
+
+  <h3>⬇️ 3. Importando dados com <code>mongoimport</code></h3>
+  <p>
+    O comando <code>mongoimport</code> é usado para inserir dados de arquivos JSON, CSV ou TSV em uma coleção do MongoDB.
+  </p>
+
+  <pre><code>mongoimport books.json -d booksData -c books</code></pre>
+
+  <p>📄 Explicação:</p>
+  <ul>
+    <li><code>books.json</code> — arquivo contendo os dados a serem importados.</li>
+    <li><code>-d booksData</code> — nome do banco de dados de destino.</li>
+    <li><code>-c books</code> — nome da coleção onde os dados serão inseridos.</li>
+  </ul>
+
+  <p>💡 Dica: o MongoDB cria a coleção automaticamente se ela não existir.</p>
+
+  <hr>
+
+  <h3>🧱 4. Exportando várias coleções com <code>mongodump</code></h3>
+  <p>
+    Para exportar **várias coleções** (ou o banco inteiro), usamos o <code>mongodump</code>.  
+    Ele gera arquivos binários BSON e metadados JSON dentro de uma pasta.
+  </p>
+
+  <pre><code>use meuBanco
+
+db.pessoas.insertOne({nome: "Matheus", idade: 30})
+db.enderecos.insertOne({rua: "Rua teste", numero: "123c"})
+
+mongodump -d meuBanco -o meuBanco</code></pre>
+
+  <p>📄 Explicação:</p>
+  <ul>
+    <li><code>-d meuBanco</code> — define o banco de dados a ser exportado.</li>
+    <li><code>-o meuBanco</code> — define o diretório onde os arquivos serão salvos.</li>
+  </ul>
+
+  <p>💾 Resultado: será criada uma pasta chamada <code>meuBanco</code> contendo os arquivos BSON de cada coleção.</p>
+
+  <hr>
+
+  <h3>🔁 5. Importando backups com <code>mongorestore</code></h3>
+  <p>
+    Para restaurar os dados exportados com <code>mongodump</code>, use o comando:
+  </p>
+
+  <pre><code>mongorestore meuBanco/</code></pre>
+  <p>
+    Isso recria o banco e as coleções originais com os mesmos dados.
+  </p>
+
+  <hr>
+
+  <h3>🧪 6. Exemplo prático completo</h3>
+  <pre><code># Criando banco e dados
+use novoBanco
+
+db.dados.insertOne({prova_numero: 1, nota: 10})
+db.dados.insertOne({prova_numero: 2, nota: 8})
+db.dados.insertOne({prova_numero: 3, nota: 7})
+
+# Exportando para JSON
+mongoexport -c dados -d novoBanco -o novoBanco.json
+
+# Importando em outro banco
+mongoimport novoBanco.json -d novoBancoDois -c novosdados</code></pre>
+
+  <p>
+    Esse exemplo cria um banco chamado <code>novoBanco</code>, exporta os dados da coleção <code>dados</code> e 
+    importa para um novo banco chamado <code>novoBancoDois</code> na coleção <code>novosdados</code>.
+  </p>
+
+  <hr>
+
+  <h3>⚙️ Parâmetros úteis do <code>mongoimport</code> e <code>mongoexport</code></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Parâmetro</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>--jsonArray</code></td><td>Importa um arquivo contendo um array JSON completo</td></tr>
+      <tr><td><code>--type=csv</code></td><td>Define o tipo de arquivo (CSV, TSV, JSON)</td></tr>
+      <tr><td><code>--fields "nome,idade"</code></td><td>Define colunas para CSV/TSV</td></tr>
+      <tr><td><code>--drop</code></td><td>Apaga a coleção antes de importar novos dados</td></tr>
+      <tr><td><code>--out</code></td><td>Define o nome do arquivo de saída no export</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h3>💡 Dicas importantes</h3>
+  <ul>
+    <li>Garanta que o serviço do MongoDB esteja ativo antes de rodar os comandos de import/export.</li>
+    <li>O <code>mongoexport</code> gera arquivos em texto legível (JSON), enquanto o <code>mongodump</code> cria arquivos binários (BSON).</li>
+    <li>Use <code>mongodump</code> e <code>mongorestore</code> para backups grandes ou bancos completos.</li>
+    <li>Use <code>mongoimport</code> e <code>mongoexport</code> para trocas rápidas de dados entre coleções específicas.</li>
+  </ul>
+
+  <p>
+    Em resumo, esses comandos tornam o MongoDB extremamente flexível para manipular e transferir dados, 
+    permitindo automatizar backups, migrações e até integrações com outros sistemas de forma simples e eficiente.
+  </p>
+</section>
 
