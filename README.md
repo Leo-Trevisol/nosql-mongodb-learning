@@ -1325,4 +1325,177 @@ mongoimport novoBanco.json -d novoBancoDois -c novosdados</code></pre>
   </p>
 </section>
 
+<section id="consultas-mongodb">
+  <h2>🔎 Consultas no MongoDB (Read)</h2>
+  <p>
+    A leitura de dados — representada pela letra <strong>R</strong> do acrônimo 
+    <strong>CRUD</strong> (<em>Create, Read, Update, Delete</em>) — é uma das operações 
+    mais utilizadas no <strong>MongoDB</strong>.  
+    O comando principal para realizar consultas é o <code>find()</code>, que permite 
+    buscar documentos em uma coleção com base em filtros, operadores e múltiplos critérios.
+  </p>
 
+  <h3>📋 Exibindo todos os documentos</h3>
+  <p>
+    O comando básico para listar todos os documentos de uma coleção é:
+  </p>
+  <pre><code>db.books.find()</code></pre>
+  <p>
+    Isso retornará todos os registros existentes dentro da coleção <code>books</code>.  
+    No entanto, o resultado aparece em formato compacto, o que pode dificultar a leitura.
+  </p>
+
+  <h4>✨ Formatando a saída com <code>pretty()</code></h4>
+  <p>
+    Para deixar o resultado legível e estruturado, podemos usar:
+  </p>
+  <pre><code>db.books.find().pretty()</code></pre>
+  <p>
+    O método <code>pretty()</code> formata o retorno com identação, exibindo cada campo 
+    em uma nova linha — ideal para visualizar documentos longos ou aninhados.  
+    Esse método só funciona no shell do MongoDB (<em>mongosh</em>).
+  </p>
+
+  <h3>🎯 Encontrando documentos específicos</h3>
+  <p>
+    Para filtrar resultados, basta passar um objeto de consulta ao <code>find()</code>:
+  </p>
+  <pre><code>db.books.find({ pageCount: 362 })</code></pre>
+  <p>
+    O MongoDB retorna todos os livros cujo campo <code>pageCount</code> seja exatamente 362.  
+    Também é possível filtrar por texto:
+  </p>
+  <pre><code>db.books.find({ title: "MongoDB in Action" })
+db.books.find({ authors: "Jason R. Weiss" })</code></pre>
+
+  <h3>📚 Buscando múltiplos valores com <code>$in</code></h3>
+  <p>
+    O operador <code>$in</code> permite buscar documentos cujo campo corresponda 
+    a um dos valores em uma lista:
+  </p>
+  <pre><code>db.books.find({ categories: { $in: ["Java", "Internet"] } }).pretty()</code></pre>
+  <p>
+    Nesse exemplo, o MongoDB retornará todos os livros que pertençam às categorias 
+    <strong>Java</strong> ou <strong>Internet</strong>.
+  </p>
+
+  <h3>⚖️ Consultas com múltiplas condições</h3>
+  <p>
+    É possível combinar múltiplos filtros em uma mesma busca, separando os campos por vírgula:
+  </p>
+  <pre><code>db.books.find({ pageCount: 592, _id: 63 }).pretty()</code></pre>
+  <p>
+    Nesse caso, o MongoDB retornará documentos que satisfaçam <strong>ambas</strong> 
+    as condições — ou seja, o operador <strong>AND</strong> é aplicado implicitamente.
+  </p>
+
+  <h3>📈 Operadores de comparação</h3>
+  <p>
+    O MongoDB oferece operadores que permitem comparar valores numéricos e de data, 
+    tornando as consultas mais poderosas.
+  </p>
+
+  <ul>
+    <li><code>$gt</code> — maior que</li>
+    <li><code>$lt</code> — menor que</li>
+    <li><code>$gte</code> — maior ou igual a</li>
+    <li><code>$lte</code> — menor ou igual a</li>
+    <li><code>$ne</code> — diferente de</li>
+  </ul>
+
+  <pre><code>db.books.find({ pageCount: { $gt: 450 } }).pretty()
+db.books.find({ pageCount: { $lt: 120 } }).pretty()</code></pre>
+  <p>
+    O primeiro comando retorna livros com mais de 450 páginas, 
+    enquanto o segundo retorna livros com menos de 120 páginas.
+  </p>
+
+  <h3>🔀 Operadores lógicos (<code>$or</code> e <code>$and</code>)</h3>
+  <p>
+    Para combinar diferentes condições de forma flexível, usamos os operadores 
+    <code>$or</code> e <code>$and</code>.
+  </p>
+
+  <h4>➡️ Usando <code>$or</code></h4>
+  <pre><code>db.books.find({
+  $or: [
+    { pageCount: { $gt: 500 } },
+    { _id: { $lt: 5 } }
+  ]
+}).pretty()</code></pre>
+  <p>
+    O comando retorna livros com mais de 500 páginas <strong>ou</strong> com 
+    <code>_id</code> menor que 5.
+  </p>
+
+  <h4>➡️ Combinando <code>AND</code> e <code>OR</code></h4>
+  <pre><code>db.books.find({
+  status: "PUBLISH",
+  $or: [
+    { pageCount: 500 },
+    { authors: "Robi Sen" }
+  ]
+}).pretty()</code></pre>
+  <p>
+    Aqui, o MongoDB retorna livros com status <code>PUBLISH</code> e que atendam a 
+    pelo menos uma das condições do <code>$or</code>.
+  </p>
+
+  <h3>🔢 Contando resultados</h3>
+  <p>
+    Para saber quantos documentos correspondem a um filtro, basta usar o método 
+    <code>count()</code>:
+  </p>
+  <pre><code>db.books.find({ pageCount: { $gt: 600 } }).count()</code></pre>
+  <p>
+    Esse comando retorna o número total de livros com mais de 600 páginas.  
+    É muito útil em relatórios e validações automáticas.
+  </p>
+
+  <h3>🧠 Exemplos práticos (Tarefa 03)</h3>
+  <p>Alguns exemplos de consultas combinadas e práticas de filtragem:</p>
+  <pre><code>db.books.find({ categories: "Java" }).pretty()
+db.books.find({ pageCount: { $lt: 100 } }).pretty()
+db.books.find({ categories: "Microsoft", pageCount: { $gt: 300 } }).pretty()
+db.books.find({ categories: "Web Development" }).count()
+db.books.find({ 
+  $or: [ 
+    { authors: "Bret Updegraff" }, 
+    { categories: "Mobile" } 
+  ] 
+}).pretty()</code></pre>
+
+  <h3>💡 Dicas e boas práticas</h3>
+  <ul>
+    <li>Use <code>pretty()</code> apenas no shell — ele não afeta o resultado em aplicações.</li>
+    <li>Combine operadores para criar filtros poderosos e específicos.</li>
+    <li>Utilize <code>count()</code> para obter métricas rápidas de dados.</li>
+    <li>Prefira usar índices para melhorar a performance de consultas em grandes coleções.</li>
+  </ul>
+
+  <h3>🧾 Resumo dos principais comandos de leitura</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Função</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>db.colecao.find()</code></td><td>Busca todos os documentos</td></tr>
+      <tr><td><code>db.colecao.find().pretty()</code></td><td>Exibe os resultados formatados</td></tr>
+      <tr><td><code>db.colecao.find({ campo: valor })</code></td><td>Filtra documentos específicos</td></tr>
+      <tr><td><code>$in</code></td><td>Busca documentos que contenham qualquer valor de uma lista</td></tr>
+      <tr><td><code>$gt / $lt</code></td><td>Busca por valores maiores ou menores que o definido</td></tr>
+      <tr><td><code>$or</code></td><td>Combina condições alternativas</td></tr>
+      <tr><td><code>$and</code></td><td>Combina condições obrigatórias</td></tr>
+      <tr><td><code>.count()</code></td><td>Conta o número de resultados retornados</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    As consultas são o coração do trabalho com o <strong>MongoDB</strong>.  
+    Dominar filtros, operadores e combinações lógicas permite extrair exatamente 
+    as informações desejadas de grandes volumes de dados, de forma eficiente e flexível.
+  </p>
+</section>
