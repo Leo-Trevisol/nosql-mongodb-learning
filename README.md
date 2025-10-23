@@ -1452,7 +1452,7 @@ db.books.find({ pageCount: { $lt: 120 } }).pretty()</code></pre>
     É muito útil em relatórios e validações automáticas.
   </p>
 
-  <h3>🧠 Exemplos práticos (Tarefa 03)</h3>
+  <h3>🧠 Exemplos práticos</h3>
   <p>Alguns exemplos de consultas combinadas e práticas de filtragem:</p>
   <pre><code>db.books.find({ categories: "Java" }).pretty()
 db.books.find({ pageCount: { $lt: 100 } }).pretty()
