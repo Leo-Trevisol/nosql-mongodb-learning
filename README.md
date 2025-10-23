@@ -1317,13 +1317,6 @@ mongoimport novoBanco.json -d novoBancoDois -c novosdados</code></pre>
 
 <section id="consultas-mongodb">
   <h2>🔎 Consultas no MongoDB (Read)</h2>
-  <p>
-    A leitura de dados — representada pela letra <strong>R</strong> do acrônimo 
-    <strong>CRUD</strong> (<em>Create, Read, Update, Delete</em>) — é uma das operações 
-    mais utilizadas no <strong>MongoDB</strong>.  
-    O comando principal para realizar consultas é o <code>find()</code>, que permite 
-    buscar documentos em uma coleção com base em filtros, operadores e múltiplos critérios.
-  </p>
 
   <h3>📋 Exibindo todos os documentos</h3>
   <p>
@@ -1483,23 +1476,11 @@ db.books.find({
     </tbody>
   </table>
 
-  <p>
-    As consultas são o coração do trabalho com o <strong>MongoDB</strong>.  
-    Dominar filtros, operadores e combinações lógicas permite extrair exatamente 
-    as informações desejadas de grandes volumes de dados, de forma eficiente e flexível.
-  </p>
 </section>
 
 <section id="atualizacao-mongodb">
   <h2>🧩 Atualização de Dados no MongoDB (Update)</h2>
-  <p>
-    A atualização de dados representa a letra <strong>U</strong> do acrônimo 
-    <strong>CRUD</strong> (<em>Create, Read, Update, Delete</em>).  
-    No <strong>MongoDB</strong>, essa operação permite modificar documentos existentes dentro 
-    de uma <em>collection</em> — seja para alterar campos, adicionar novas informações, substituir 
-    documentos inteiros ou atualizar múltiplos registros simultaneamente.
-  </p>
-
+  
   <h3>🛠️ Principais métodos de atualização</h3>
   <p>
     O MongoDB disponibiliza três métodos principais para modificar documentos:
@@ -1669,6 +1650,106 @@ db.books.updateMany(
       <tr><td><code>$addToSet</code></td><td>Adiciona ao array apenas se não existir</td></tr>
     </tbody>
   </table>
-  
 </section>
+
+<section id="delecao-mongodb">
+  <h2>🗑️ Deleção de Dados no MongoDB (Delete)</h2>
+  
+  <h3>🧩 Principais métodos de deleção</h3>
+  <p>
+    O MongoDB possui dois métodos principais para exclusão de documentos:
+  </p>
+  <ul>
+    <li><code>deleteOne()</code> – Remove o <strong>primeiro documento</strong> que corresponde ao filtro especificado.</li>
+    <li><code>deleteMany()</code> – Remove <strong>todos os documentos</strong> que atendem ao critério de filtragem.</li>
+  </ul>
+
+  <h4>➡️ Exemplo com <code>deleteOne()</code></h4>
+  <pre><code>db.books.deleteOne({ _id: 20 })</code></pre>
+  <p>
+    O comando acima remove o documento com o campo <code>_id</code> igual a <code>20</code> 
+    da collection <code>books</code>.  
+    Mesmo que existam vários documentos com a mesma condição, apenas o primeiro encontrado será deletado.
+  </p>
+
+  <h4>➡️ Exemplo com <code>deleteMany()</code></h4>
+  <pre><code>db.books.deleteMany({ categories: "Java" })</code></pre>
+  <p>
+    Nesse exemplo, todos os documentos que possuem o campo 
+    <code>categories</code> igual a <code>"Java"</code> serão removidos da coleção.
+  </p>
+
+  <h3>🧨 Removendo todos os documentos de uma collection</h3>
+  <p>
+    Se o objetivo for apagar <strong>todos os registros</strong> de uma coleção, sem excluir a estrutura dela,  
+    pode-se utilizar o comando <code>deleteMany()</code> sem filtro:
+  </p>
+  <pre><code>db.books.deleteMany({})</code></pre>
+  <p>
+    Isso limpa completamente os documentos da coleção, mantendo-a vazia, pronta para receber novos dados.
+    ⚠️ <strong>Atenção:</strong> esse comando não pode ser desfeito. Use com cautela!
+  </p>
+
+  <h3>📋 Diferenças entre <code>deleteOne()</code> e <code>deleteMany()</code></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Função</th>
+        <th>Afeta quantos documentos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>deleteOne()</code></td>
+        <td>Remove o primeiro documento que corresponde ao filtro</td>
+        <td>1 documento</td>
+      </tr>
+      <tr>
+        <td><code>deleteMany()</code></td>
+        <td>Remove todos os documentos que correspondem ao filtro</td>
+        <td>Vários documentos</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>💡 Boas práticas ao deletar dados</h3>
+  <ul>
+    <li>🔍 Sempre utilize o comando <code>find()</code> antes de deletar para visualizar o que será removido.</li>
+    <li>🧾 Faça backups antes de operações destrutivas.</li>
+    <li>⚙️ Evite usar <code>deleteMany({})</code> em ambientes de produção.</li>
+    <li>🎯 Especifique filtros claros para evitar exclusões acidentais.</li>
+  </ul>
+
+  <h3>🧠 Exemplos práticos</h3>
+  <pre><code>// 1️⃣ Deletando um único documento
+db.books.deleteOne({ _id: 20 })
+
+// 2️⃣ Deletando vários documentos da categoria "Java"
+db.books.deleteMany({ categories: "Java" })
+
+// 3️⃣ Verificando os dados restantes
+db.books.find().pretty()
+
+// 4️⃣ Removendo todos os documentos (com cuidado)
+db.books.deleteMany({})
+</code></pre>
+
+  <h3>📚 Resumo dos comandos de deleção</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>deleteOne()</code></td><td>Remove o primeiro documento que corresponde ao filtro.</td></tr>
+      <tr><td><code>deleteMany()</code></td><td>Remove todos os documentos que correspondem ao filtro.</td></tr>
+      <tr><td><code>deleteMany({})</code></td><td>Remove todos os documentos da coleção.</td></tr>
+    </tbody>
+  </table>
+
+</section>
+
 
