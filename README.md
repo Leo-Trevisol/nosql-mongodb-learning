@@ -1171,10 +1171,6 @@ mongoimport novoBanco.json -d novoBancoDois -c novosdados</code></pre>
     <li>Use <code>mongoimport</code> e <code>mongoexport</code> para trocas rápidas de dados entre coleções específicas.</li>
   </ul>
 
-  <p>
-    Em resumo, esses comandos tornam o MongoDB extremamente flexível para manipular e transferir dados, 
-    permitindo automatizar backups, migrações e até integrações com outros sistemas de forma simples e eficiente.
-  </p>
 </section>
 
 <section id="insercao-dados-mongodb">
@@ -1317,12 +1313,6 @@ mongoimport novoBanco.json -d novoBancoDois -c novosdados</code></pre>
     </tbody>
   </table>
 
-  <p>
-    Dominar a inserção de dados no MongoDB é fundamental para qualquer desenvolvedor 
-    que deseje compreender a base do modelo orientado a documentos.  
-    A flexibilidade do <strong>MongoDB</strong> torna essa etapa simples e poderosa, 
-    permitindo estruturar dados de forma natural e escalável.
-  </p>
 </section>
 
 <section id="consultas-mongodb">
@@ -1499,3 +1489,186 @@ db.books.find({
     as informações desejadas de grandes volumes de dados, de forma eficiente e flexível.
   </p>
 </section>
+
+<section id="atualizacao-mongodb">
+  <h2>🧩 Atualização de Dados no MongoDB (Update)</h2>
+  <p>
+    A atualização de dados representa a letra <strong>U</strong> do acrônimo 
+    <strong>CRUD</strong> (<em>Create, Read, Update, Delete</em>).  
+    No <strong>MongoDB</strong>, essa operação permite modificar documentos existentes dentro 
+    de uma <em>collection</em> — seja para alterar campos, adicionar novas informações, substituir 
+    documentos inteiros ou atualizar múltiplos registros simultaneamente.
+  </p>
+
+  <h3>🛠️ Principais métodos de atualização</h3>
+  <p>
+    O MongoDB disponibiliza três métodos principais para modificar documentos:
+  </p>
+
+  <ul>
+    <li><code>updateOne()</code> – Atualiza apenas o primeiro documento que corresponde ao filtro.</li>
+    <li><code>updateMany()</code> – Atualiza todos os documentos que atendem ao critério.</li>
+    <li><code>replaceOne()</code> – Substitui completamente um documento por outro.</li>
+  </ul>
+
+  <h4>➡️ Exemplo com <code>updateOne()</code></h4>
+  <pre><code>db.books.updateOne(
+  { _id: 314 },
+  { $set: { pageCount: 1000 } }
+)</code></pre>
+  <p>
+    Nesse exemplo, o documento com <code>_id: 314</code> terá o campo 
+    <code>pageCount</code> atualizado para <code>1000</code>.
+  </p>
+
+  <h4>➡️ Exemplo com <code>updateMany()</code></h4>
+  <pre><code>db.books.updateMany(
+  { categories: "Java" },
+  { $set: { status: "UNPUBLISHED" } }
+)</code></pre>
+  <p>
+    Esse comando atualiza todos os livros da categoria <strong>Java</strong>, 
+    alterando o campo <code>status</code> para <code>"UNPUBLISHED"</code>.
+  </p>
+
+  <h4>➡️ Exemplo com <code>replaceOne()</code></h4>
+  <pre><code>db.books.replaceOne(
+  { _id: 120 },
+  { foi: "substituido" }
+)</code></pre>
+  <p>
+    O comando acima substitui completamente o documento original por um novo objeto.  
+    ⚠️ Todos os campos anteriores são removidos.
+  </p>
+
+  <h3>🔧 Operadores de atualização</h3>
+  <p>
+    Para controlar o comportamento das atualizações, o MongoDB utiliza operadores especiais:
+  </p>
+
+  <ul>
+    <li><code>$set</code> – Define ou altera o valor de um campo.</li>
+    <li><code>$push</code> – Adiciona um novo item a um array existente.</li>
+    <li><code>$inc</code> – Incrementa ou decrementa valores numéricos.</li>
+    <li><code>$unset</code> – Remove um campo do documento.</li>
+    <li><code>$addToSet</code> – Adiciona ao array apenas se o valor ainda não existir.</li>
+  </ul>
+
+  <h4>💡 Exemplos práticos</h4>
+  <pre><code>// Alterando o título de um livro
+db.books.updateOne(
+  { _id: 20 },
+  { $set: { title: "Meu primeiro update" } }
+)
+
+// Adicionando um campo numérico
+db.books.updateMany(
+  { authors: "Vikram Goyal" },
+  { $set: { downloads: 1000 } }
+)
+
+// Adicionando item em um array
+db.books.updateOne(
+  { _id: 201 },
+  { $push: { categories: "PHP" } }
+)
+</code></pre>
+
+  <h3>📊 Atualizações condicionais</h3>
+  <p>
+    Também é possível aplicar filtros com operadores de comparação, como 
+    <code>$gt</code> (maior que) e <code>$lt</code> (menor que):
+  </p>
+  <pre><code>db.books.updateMany(
+  { pageCount: { $gt: 500 } },
+  { $set: { bestseller: true } }
+)</code></pre>
+  <p>
+    Esse comando marca todos os livros com mais de 500 páginas como <strong>bestseller</strong>.
+  </p>
+
+  <h3>🧮 Atualização em massa</h3>
+  <p>
+    Para modificar todos os documentos de uma coleção:
+  </p>
+  <pre><code>db.books.updateMany({}, { $set: { atualizado: true } })</code></pre>
+  <p>
+    Isso adiciona (ou altera) o campo <code>atualizado</code> para <code>true</code> em 
+    todos os documentos da collection <code>books</code>.
+  </p>
+
+  <h3>📚 Atualizando arrays</h3>
+  <p>
+    O MongoDB oferece operadores específicos para manipular arrays:
+  </p>
+  <ul>
+    <li><code>$push</code> – Adiciona um novo valor.</li>
+    <li><code>$pull</code> – Remove um valor específico.</li>
+    <li><code>$addToSet</code> – Adiciona apenas se o valor não existir.</li>
+  </ul>
+  <pre><code>db.books.updateMany(
+  { categories: "Java", pageCount: { $gt: 500 } },
+  { $push: { categories: "Many Pages" } }
+)</code></pre>
+  <p>
+    Esse comando adiciona a categoria <code>"Many Pages"</code> a todos os livros de 
+    Java com mais de 500 páginas.
+  </p>
+
+  <h3>⚙️ Write Concern</h3>
+  <p>
+    O <strong>Write Concern</strong> define o nível de confirmação exigido pelo servidor 
+    após uma operação de gravação.  
+    Por exemplo, é possível configurar o MongoDB para confirmar apenas quando os dados 
+    forem gravados em múltiplos nós, garantindo maior integridade e segurança das informações.
+  </p>
+
+  <h3>🧠 Exemplos completos (Tarefa 04)</h3>
+  <pre><code>// Atualizando um único livro
+db.books.updateOne(
+  { title: "Flex 4 in Action" },
+  { $set: { status: "OUT OF STOCK" } }
+)
+
+// Atualizando múltiplos livros curtos
+db.books.updateMany(
+  { pageCount: { $lt: 100 } },
+  { $set: { short_book: true } }
+)
+
+// Adicionando uma categoria a livros grandes
+db.books.updateMany(
+  { categories: "Java", pageCount: { $gt: 500 } },
+  { $push: { categories: "Many Pages" } }
+)</code></pre>
+
+  <h3>💡 Boas práticas</h3>
+  <ul>
+    <li>Sempre verifique o filtro antes de aplicar <code>updateMany()</code> para evitar alterações globais acidentais.</li>
+    <li>Utilize operadores como <code>$set</code> e <code>$push</code> para preservar os campos originais.</li>
+    <li>Evite usar <code>replaceOne()</code> sem necessidade — ele substitui todo o documento.</li>
+    <li>Combine filtros e operadores para criar atualizações precisas e seguras.</li>
+  </ul>
+
+  <h3>🧾 Resumo dos principais comandos de atualização</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Função</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>updateOne()</code></td><td>Atualiza o primeiro documento que corresponde ao filtro</td></tr>
+      <tr><td><code>updateMany()</code></td><td>Atualiza todos os documentos que correspondem ao filtro</td></tr>
+      <tr><td><code>replaceOne()</code></td><td>Substitui completamente um documento</td></tr>
+      <tr><td><code>$set</code></td><td>Define ou altera o valor de um campo</td></tr>
+      <tr><td><code>$push</code></td><td>Adiciona um item em um array</td></tr>
+      <tr><td><code>$inc</code></td><td>Incrementa valores numéricos</td></tr>
+      <tr><td><code>$unset</code></td><td>Remove um campo</td></tr>
+      <tr><td><code>$addToSet</code></td><td>Adiciona ao array apenas se não existir</td></tr>
+    </tbody>
+  </table>
+  
+</section>
+
