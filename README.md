@@ -1604,7 +1604,7 @@ db.books.updateOne(
     forem gravados em múltiplos nós, garantindo maior integridade e segurança das informações.
   </p>
 
-  <h3>🧠 Exemplos completos (Tarefa 04)</h3>
+  <h3>🧠 Exemplos completos </h3>
   <pre><code>// Atualizando um único livro
 db.books.updateOne(
   { title: "Flex 4 in Action" },
