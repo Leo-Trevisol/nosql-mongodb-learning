@@ -1752,4 +1752,130 @@ db.books.deleteMany({})
 
 </section>
 
+<section id="tipos-de-dados-mongodb">
+  <h2>🧮 Tipos de Dados no MongoDB</h2>
+
+  <h3>📝 Strings (Textos)</h3>
+  <p>
+    O tipo de dado mais comum no MongoDB é o <code>String</code>, utilizado para representar textos.  
+    É amplamente usado em campos como nomes, endereços e descrições.
+  </p>
+  <pre><code>use tipos
+
+db.strings.insertOne({ nome: "Matheus" })
+db.strings.insertOne({ rua: "Rua Teste" })</code></pre>
+  <p>
+    Os valores de texto são delimitados por aspas duplas (<code>" "</code>) ou simples (<code>' '</code>).  
+    Esse tipo é tratado internamente como UTF-8, permitindo armazenar caracteres de praticamente qualquer idioma.
+  </p>
+
+  <h3>🔍 Verificando o tipo de dado</h3>
+  <p>
+    É possível inspecionar o tipo de um campo de documento diretamente no <em>Mongo Shell</em> usando o JavaScript:
+  </p>
+  <pre><code>const dado = db.strings.findOne()
+typeof dado.nome</code></pre>
+  <p>
+    O comando retornará <code>"string"</code>, indicando o tipo do campo <code>nome</code>.
+  </p>
+
+  <h3>📚 Arrays</h3>
+  <p>
+    Arrays são listas ordenadas de valores e são extremamente úteis no MongoDB,  
+    permitindo armazenar múltiplos elementos dentro de um único campo — como uma lista de itens, tags ou categorias.
+  </p>
+  <pre><code>db.arrays.insertOne({ carros: ["BMW", "Ferrari", "Fusca"] })</code></pre>
+  <p>
+    Nesse exemplo, o campo <code>carros</code> armazena três valores de texto dentro de um array.  
+    O MongoDB oferece diversos operadores para manipular arrays, como <code>$push</code>, <code>$pull</code> e <code>$addToSet</code>.
+  </p>
+
+  <h3>📅 Datas</h3>
+  <p>
+    O tipo <code>Date</code> é usado para representar informações de tempo, como criação, atualização ou agendamento.  
+    O MongoDB armazena datas em milissegundos desde a época UNIX (1º de janeiro de 1970), permitindo comparações e cálculos de tempo.
+  </p>
+  <pre><code>db.dates.insertOne({ data: new Date() })</code></pre>
+  <p>
+    O comando <code>new Date()</code> insere a data e hora atuais do sistema.  
+    É possível aplicar operadores como <code>$gt</code> e <code>$lt</code> para comparar datas.
+  </p>
+
+  <h3>🧾 Documents (Documentos Aninhados)</h3>
+  <p>
+    Um dos maiores diferenciais do MongoDB é o suporte a documentos aninhados — ou seja,  
+    objetos dentro de objetos, que permitem representar relações hierárquicas de forma natural e sem a necessidade de joins.
+  </p>
+  <pre><code>db.documents.insertOne({
+  nome: "Matheus",
+  desc: { profissao: "Programador", hobbies: ["Estudar", "Ler", "Caminhar"] }
+})</code></pre>
+  <p>
+    O campo <code>desc</code> contém um documento embutido com informações detalhadas, e dentro dele há um array chamado <code>hobbies</code>.  
+    Esse tipo de estrutura é ideal para representar dados complexos de maneira intuitiva.
+  </p>
+
+  <h3>✅ Boolean (Lógico)</h3>
+  <p>
+    O tipo <code>Boolean</code> armazena apenas dois valores possíveis: <code>true</code> ou <code>false</code>.  
+    É amplamente utilizado para representar estados binários, como ativo/inativo ou ligado/desligado.
+  </p>
+  <pre><code>db.bools.insertOne({ nome: "Matheus", trabalhando: true })</code></pre>
+  <p>
+    Esse documento indica que <code>Matheus</code> está atualmente trabalhando.  
+    O uso de booleanos é fundamental para condições lógicas e filtros.
+  </p>
+
+  <h3>🔢 Numbers (Números)</h3>
+  <p>
+    O MongoDB diferencia números de ponto flutuante e inteiros.  
+    Ele utiliza diferentes representações internas, como <code>double</code> e <code>int32</code>, dependendo da precisão e do tamanho do valor.
+  </p>
+  <pre><code>db.numbers.insertOne({
+  double: 12.2,
+  outro_double: 50,
+  inteiro: NumberInt("5")
+})</code></pre>
+  <p>
+    Nesse exemplo:
+  </p>
+  <ul>
+    <li><code>double</code> e <code>outro_double</code> representam números de ponto flutuante.</li>
+    <li><code>NumberInt()</code> converte uma string em número inteiro (<code>int32</code>).</li>
+  </ul>
+  <p>
+    É importante escolher o tipo adequado conforme o contexto, especialmente em operações matemáticas e de agregação.
+  </p>
+
+  <h3>📘 Resumo dos principais tipos de dados</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Descrição</th>
+        <th>Exemplo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>String</code></td><td>Texto simples (UTF-8)</td><td><code>{ nome: "Matheus" }</code></td></tr>
+      <tr><td><code>Array</code></td><td>Lista ordenada de valores</td><td><code>{ carros: ["BMW", "Ferrari"] }</code></td></tr>
+      <tr><td><code>Date</code></td><td>Data e hora</td><td><code>{ data: new Date() }</code></td></tr>
+      <tr><td><code>Document</code></td><td>Objeto aninhado dentro de outro</td><td><code>{ desc: { profissao: "Programador" } }</code></td></tr>
+      <tr><td><code>Boolean</code></td><td>Verdadeiro ou falso</td><td><code>{ ativo: true }</code></td></tr>
+      <tr><td><code>Number</code></td><td>Valores numéricos inteiros ou decimais</td><td><code>{ double: 12.2, inteiro: NumberInt("5") }</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>💡 Boas práticas</h3>
+  <ul>
+    <li>Escolha o tipo de dado mais apropriado para cada campo — evita erros e melhora o desempenho.</li>
+    <li>Padronize os tipos entre documentos de uma mesma coleção.</li>
+    <li>Use <code>NumberInt()</code> e <code>NumberLong()</code> para garantir precisão numérica.</li>
+    <li>Evite armazenar datas como strings — utilize sempre <code>Date()</code>.</li>
+    <li>Documentos aninhados devem ser usados com moderação para evitar sobrecarga de leitura.</li>
+  </ul>
+
+</section>
+
+
 
