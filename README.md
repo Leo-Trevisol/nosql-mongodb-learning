@@ -1877,5 +1877,139 @@ typeof dado.nome</code></pre>
 
 </section>
 
+<section id="operadores-query-mongodb">
+  <h2>🧭 Operadores de Query no MongoDB (Select)</h2>
+
+  <h3>📥 Preparando dados para testes</h3>
+  <p>
+    Exemplo de importação usada nos comandos a seguir:
+  </p>
+  <pre><code>mongoimport restaurant.json -d restaurantsData -c restaurants</code></pre>
+
+  <h3>✅ Igualdade (<code>$eq</code>)</h3>
+  <p>
+    O operador <code>$eq</code> busca documentos cujo campo é igual a um valor.  
+    Observação: passar um par <code>{ campo: valor }</code> sem operador é equivalente a usar <code>$eq</code>.
+  </p>
+  <pre><code>// iguais
+db.restaurants.findOne({ rating: { $eq: 5 } })
+db.restaurants.findOne({ rating: 5 })  // equivalente</code></pre>
+
+  <h3>📈 Comparações (<code>$gt</code>, <code>$gte</code>, <code>$lt</code>, <code>$lte</code>)</h3>
+  <p>
+    Operadores de comparação servem para valores numéricos e de data:
+  </p>
+  <pre><code>// maior que / maior ou igual
+db.restaurants.findOne({ rating: { $gt: 4 } })
+db.restaurants.findOne({ rating: { $gte: 4 } })
+
+// menor que / menor ou igual
+db.restaurants.findOne({ rating: { $lt: 2 } })
+db.restaurants.findOne({ rating: { $lte: 2 } })</code></pre>
+  <p>
+    Use esses operadores para filtros por faixa — por exemplo, restaurantes com nota >= 3:
+  </p>
+  <pre><code>db.restaurants.find({ type_of_food: "Breakfast", rating: { $gte: 3 } })</code></pre>
+
+  <h3>📚 Membros de conjunto (<code>$in</code> e <code>$nin</code>)</h3>
+  <p>
+    <code>$in</code> retorna documentos cujo campo tem qualquer valor de uma lista; <code>$nin</code> é o oposto (not in).
+  </p>
+  <pre><code>// qualquer valor entre Pizza ou Chinese
+db.restaurants.find({ type_of_food: { $in: ["Pizza", "Chinese"] } })
+
+// campos que NÃO estão entre a lista (nota: use $nin)
+db.restaurants.find({ postcode: { $nin: ["0JH", "0BE", "0HG"] } })</code></pre>
+
+  <h3>≠ Diferente (<code>$ne</code>)</h3>
+  <p>
+    <code>$ne</code> busca valores diferentes do especificado:
+  </p>
+  <pre><code>db.restaurants.findOne({ rating: { $ne: 5 } })</code></pre>
+  <p>
+    Útil para excluir um valor específico, mas lembre-se que <code>$ne</code> também retornará documentos onde o campo não existe — combine com <code>$exists</code> se necessário.
+  </p>
+
+  <h3>🔎 Existência de campo (<code>$exists</code>)</h3>
+  <p>
+    Verifica se um documento possui (ou não) um campo. Muito útil após operações que marcam documentos:
+  </p>
+  <pre><code>// marcar documentos com high_score
+db.restaurants.updateMany({ rating: 5 }, { $set: { high_score: true } })
+
+// buscar documentos que possuem o campo high_score
+db.restaurants.find({ high_score: { $exists: true } })</code></pre>
+  <p>
+    Use <code>{ campo: { $exists: false } }</code> para localizar documentos sem aquele campo e tratá-los.
+  </p>
+
+  <h3>📝 Busca textual (<code>$text</code>)</h3>
+  <p>
+    Para pesquisas por texto livre, crie um índice textual e use <code>$text</code> com <code>$search</code>:
+  </p>
+  <pre><code>// criar índice textual no campo name
+db.restaurants.createIndex({ name: "text" })
+
+// buscar por "pizza" no índice texto
+db.restaurants.find({ $text: { $search: "pizza" } }).pretty()</code></pre>
+  <p>
+    O índice textual suporta buscas por palavras, operadores booleanos e classificação por relevância (score).  
+    Exemplo para retornar score de relevância:
+  </p>
+  <pre><code>db.restaurants.find(
+  { $text: { $search: "pizza" } },
+  { score: { $meta: "textScore" }, name: 1, rating: 1 }
+).sort({ score: { $meta: "textScore" } })</code></pre>
+
+  <h3>🔗 Combinando operadores</h3>
+  <p>
+    Você pode combinar operadores em um mesmo filtro (AND implícito) ou usar operadores lógicos (<code>$or</code>, <code>$and</code>) para regras mais complexas:
+  </p>
+  <pre><code>// AND implícito: ambos os critérios devem ser verdadeiros
+db.restaurants.find({ type_of_food: "Breakfast", rating: { $gte: 3 } })
+
+// OR explícito
+db.restaurants.find({
+  $or: [
+    { type_of_food: "Pizza" },
+    { rating: { $gte: 4 } }
+  ]
+})</code></pre>
+
+  <h3>⚡ Performance e índices</h3>
+  <p>
+    - Para consultas rápidas em grandes coleções, crie índices nos campos mais usados em filtros (<code>rating</code>, <code>type_of_food</code>, etc.).  
+    - Índices compostos ajudam quando você filtra por vários campos ao mesmo tempo.  
+    - Use <code>explain()</code> para ver o plano de execução e confirmar se a consulta usa índices:
+  </p>
+  <pre><code>db.restaurants.find({ rating: { $gte: 4 } }).explain("executionStats")</code></pre>
+
+  <h3>💡 Dicas práticas</h3>
+  <ul>
+    <li>Prefira sintaxe simples <code>{ campo: valor }</code> para igualdade (internamente é <code>$eq</code>).</li>
+    <li>Use <code>$in</code> para "valor em lista" e <code>$nin</code> para "valor não em lista".</li>
+    <li>Combine <code>$exists</code> com outros filtros para evitar resultados inesperados com <code>$ne</code>.</li>
+    <li>Crie índices antes de executar buscas textuais ou filtros frequentes.</li>
+    <li>Teste consultas com <code>explain()</code> para otimizar performance e evitar scans completos.</li>
+  </ul>
+
+  <h3>🧾 Resumo rápido</h3>
+  <table>
+    <thead>
+      <tr><th>Operador</th><th>Função</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>$eq</code></td><td>Igualdade (pode omitir e usar { campo: valor })</td></tr>
+      <tr><td><code>$gt / $gte</code></td><td>Maior que / maior ou igual</td></tr>
+      <tr><td><code>$lt / $lte</code></td><td>Menor que / menor ou igual</td></tr>
+      <tr><td><code>$in</code></td><td>Valor está em uma lista</td></tr>
+      <tr><td><code>$nin</code></td><td>Valor não está em uma lista</td></tr>
+      <tr><td><code>$ne</code></td><td>Diferente de (atenção a campos inexistentes)</td></tr>
+      <tr><td><code>$exists</code></td><td>Verifica existência de campo</td></tr>
+      <tr><td><code>$text</code></td><td>Busca textual usando índice de texto</td></tr>
+    </tbody>
+  </table>
+
+</section>
 
 
