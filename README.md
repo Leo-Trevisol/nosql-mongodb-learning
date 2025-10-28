@@ -2012,4 +2012,206 @@ db.restaurants.find({
 
 </section>
 
+<section id="relacionamentos-mongodb">
+  <h2>🔗 Relacionamentos no MongoDB</h2>
+
+  <p>
+    Embora o <strong>MongoDB</strong> seja um banco de dados <em>não relacional</em>, ele oferece formas flexíveis de representar relacionamentos entre documentos.  
+    Em vez de usar <em>joins</em> como em bancos relacionais, o MongoDB trabalha com duas principais abordagens:
+  </p>
+
+  <ul>
+    <li><strong>Documentos incorporados (Embedded Documents)</strong> — dados aninhados dentro de um mesmo documento.</li>
+    <li><strong>Referências (References)</strong> — documentos separados, ligados por identificadores (<code>_id</code>).</li>
+  </ul>
+
+  <p>
+    A seguir, exploramos os quatro tipos mais comuns de relacionamentos:
+    <strong>Embedded Documents</strong>, <strong>One-to-One</strong>, <strong>One-to-Many</strong> e <strong>Many-to-Many</strong>.
+  </p>
+
+  <h3>🏠 1. Embedded Documents (Documentos Incorporados)</h3>
+  <p>
+    O modelo de documentos incorporados é o mais simples e performático.  
+    Todos os dados relacionados são armazenados dentro de um único documento — ideal quando as informações são fortemente dependentes e acessadas juntas.
+  </p>
+
+  <pre><code>// Exemplo: Pessoa com endereço embutido
+use relationships
+
+db.embedded.insertOne({
+  nome: "Matheus",
+  idade: 30,
+  endereco: {
+    rua: "Rua das flores",
+    numero: "1314",
+    complemento: "Casa"
+  }
+})
+
+// Acessando subcampos
+const matheus = db.embedded.findOne()
+matheus.endereco.rua  // "Rua das flores"</code></pre>
+
+  <p>
+    Também é possível incluir vários subdocumentos dentro de um mesmo documento:
+  </p>
+
+  <pre><code>// Pessoa com múltiplos endereços
+db.embedded.insertOne({
+  nome: "João",
+  idade: 40,
+  enderecos: {
+    casa: {
+      rua: "Rua das flores",
+      numero: "1314",
+      complemento: "Casa"
+    },
+    trabalho: {
+      rua: "Rua das árvores",
+      numero: "102 C",
+      complemento: "Galpão"
+    }
+  }
+})
+
+const joao = db.embedded.findOne({ nome: "João" })
+joao.enderecos.trabalho.numero  // "102 C"</code></pre>
+
+  <p>
+    ✅ <strong>Vantagens:</strong> leitura rápida e atomicidade (tudo em um único documento).<br>
+    ⚠️ <strong>Desvantagens:</strong> limite de 16MB por documento e risco de duplicação de dados.
+  </p>
+
+  <h3>👤 2. One-to-One (Um para Um)</h3>
+  <p>
+    Um relacionamento <strong>um-para-um</strong> associa um documento a exatamente outro.  
+    Esse tipo é comum em casos como “Pessoa” e “Endereço”.
+  </p>
+
+  <pre><code>// Criando pessoa
+db.pessoas.insertOne({
+  nome: "Matheus",
+  idade: 30,
+  profissao: "Programador"
+})
+
+const matheus = db.pessoas.findOne()
+const matheusId = matheus._id
+
+// Criando endereço vinculado à pessoa
+db.enderecos.insertOne({
+  rua: "Rua das flores",
+  numero: "1414",
+  complemento: "Casa",
+  pessoa_id: matheusId
+})
+
+// Consultando endereço da pessoa
+db.enderecos.find({ pessoa_id: matheusId })</code></pre>
+
+  <p>
+    🧠 <strong>Dica:</strong> esse padrão é ideal quando os dados têm tamanhos diferentes ou quando é necessário carregar partes separadas do documento.
+  </p>
+
+  <h3>👥 3. One-to-Many (Um para Muitos)</h3>
+  <p>
+    Representa um documento principal que se relaciona com vários outros.  
+    Um exemplo clássico é uma pessoa que possui várias compras.
+  </p>
+
+  <pre><code>// Criando pessoa
+db.pessoas.insertOne({ nome: "Gustavo", idade: 29, profissao: "Gerente" })
+
+const gustavo = db.pessoas.findOne({ nome: "Gustavo" })
+const gustavoId = gustavo._id
+
+// Inserindo várias compras
+db.compras.insertMany([
+  { produtos: ["Livro", "Celular"], pessoa_id: matheusId },
+  { produtos: ["Mouse", "Teclado"], pessoa_id: matheusId },
+  { produtos: ["Agenda"], pessoa_id: matheusId },
+  { produtos: ["Barbeador", "Suporte monitor"], pessoa_id: gustavoId }
+])
+
+// Consultando compras de cada pessoa
+db.compras.find({ pessoa_id: matheusId })
+db.compras.find({ pessoa_id: gustavoId })</code></pre>
+
+  <p>
+    ✅ <strong>Vantagens:</strong> evita duplicação de dados e permite consultas mais específicas.<br>
+    ⚠️ <strong>Desvantagem:</strong> é necessário múltiplas consultas para montar o resultado completo.
+  </p>
+
+  <h3>🌐 4. Many-to-Many (Muitos para Muitos)</h3>
+  <p>
+    Em relacionamentos <strong>muitos-para-muitos</strong>, vários documentos de uma coleção estão associados a vários documentos de outra.  
+    Exemplo: várias pessoas podem participar de vários cursos.
+  </p>
+
+  <pre><code>// Criando cursos
+db.cursos.insertMany([
+  { nome: "PHP avançado" },
+  { nome: "JavaScript básico" },
+  { nome: "Banco de dados NoSQL" }
+])
+
+// Criando pessoa
+db.pessoas.insertOne({ nome: "Pedro", idade: 40 })
+
+const gustavo = db.pessoas.findOne({ nome: "Gustavo" })
+const matheus = db.pessoas.findOne({ nome: "Matheus" })
+
+const php = db.cursos.findOne({ nome: "PHP avançado" })
+const js = db.cursos.findOne({ nome: "JavaScript básico" })
+
+// Tabela de relação (curso_pessoa)
+db.curso_pessoa.insertMany([
+  { curso_id: php._id, pessoa_id: matheus._id },
+  { curso_id: js._id, pessoa_id: matheus._id },
+  { curso_id: js._id, pessoa_id: gustavo._id }
+])</code></pre>
+
+  <p>
+    Para listar todos os alunos do curso de JavaScript:
+  </p>
+
+  <pre><code>// Listando alunos do curso de JS
+const idsAlunos = []
+
+db.curso_pessoa.find({ curso_id: js._id }).forEach(function(aluno) {
+  idsAlunos.push(aluno.pessoa_id)
+})
+
+db.pessoas.find({ _id: { $in: idsAlunos } })</code></pre>
+
+  <p>
+    🧩 <strong>Dica:</strong> para relacionamentos complexos, crie uma coleção intermediária (ex.: <code>curso_pessoa</code>) para evitar redundância e facilitar consultas.
+  </p>
+
+  <h3>📘 Resumo dos tipos de relacionamento</h3>
+  <table>
+    <thead>
+      <tr><th>Tipo</th><th>Descrição</th><th>Estrutura recomendada</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Embedded Document</strong></td><td>Dados aninhados no mesmo documento</td><td>Ideal para dados pequenos e dependentes</td></tr>
+      <tr><td><strong>One-to-One</strong></td><td>Um documento ligado a outro via referência</td><td>Referência por <code>_id</code></td></tr>
+      <tr><td><strong>One-to-Many</strong></td><td>Um documento se relaciona com vários</td><td>Campo <code>pessoa_id</code> nas coleções filhas</td></tr>
+      <tr><td><strong>Many-to-Many</strong></td><td>Vários documentos se relacionam entre si</td><td>Coleção intermediária (ex.: <code>curso_pessoa</code>)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>💡 Boas práticas</h3>
+  <ul>
+    <li>Use <strong>embedded documents</strong> quando os dados forem fortemente relacionados e acessados juntos.</li>
+    <li>Prefira <strong>referências</strong> quando os dados forem independentes ou crescerem separadamente.</li>
+    <li>Evite duplicar informações — o MongoDB não possui <em>joins</em> nativos, mas é possível usar <code>$lookup</code> para unir coleções.</li>
+    <li>Atualize documentos relacionados com <code>updateMany()</code> ou transações (<em>transactions</em>).</li>
+    <li>Crie índices em campos de referência (<code>pessoa_id</code>, <code>curso_id</code>) para melhorar o desempenho.</li>
+  </ul>
+
+</section>
+
+
 
