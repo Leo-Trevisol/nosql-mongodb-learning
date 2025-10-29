@@ -2012,6 +2012,138 @@ db.restaurants.find({
 
 </section>
 
+<section id="selecionar-arrays-documents">
+  <h2>🧩 Seleção de Arrays e Documents</h2>
+
+  <p>
+    A <strong>seleção de arrays e documentos embutidos</strong> é uma das funcionalidades mais poderosas do <strong>MongoDB</strong>.  
+    Ela permite consultar, filtrar e manipular dados dentro de <em>subdocumentos</em> e <em>arrays</em> armazenados em cada documento, mantendo a estrutura flexível e hierárquica do banco.
+  </p>
+
+  <h3>📄 1. Seleção em Documentos Embutidos</h3>
+  <p>
+    Documentos podem conter outros documentos dentro deles.  
+    Para acessar esses campos internos, utiliza-se o <strong>operador de ponto (<code>.</code>)</strong>:
+  </p>
+
+  <pre><code>// Buscar pessoas com olhos castanhos
+db.pessoas.find({ "caracteristicas.cor_dos_olhos": "castanhos" }).pretty()
+</code></pre>
+
+  <p>
+    Também é possível combinar condições com operadores lógicos e de comparação:
+  </p>
+
+  <pre><code>// Pessoas com peso entre valores específicos e idade acima de 20
+db.pessoas.find({
+  "caracteristicas.peso": { $in: ["80kg", "92kg"] },
+  "caracteristicas.idade": { $gt: 20 }
+})
+</code></pre>
+
+  <ul>
+    <li><strong>$in</strong> — verifica se o valor está dentro de uma lista.</li>
+    <li><strong>$gt</strong> — seleciona valores <em>maiores que</em> o especificado.</li>
+  </ul>
+
+  <h3>🧮 2. Seleção em Arrays</h3>
+  <p>
+    Arrays armazenam múltiplos valores dentro de um mesmo campo, como notas de alunos ou variações de um produto.  
+    É possível consultá-los de diferentes formas:
+  </p>
+
+  <pre><code>// Alunos que possuem nota 6 em alguma posição do array
+db.alunos.find({ matematica: 6 })
+
+// Alunos cujo array é exatamente igual
+db.alunos.find({ matematica: [8, 8, 9, 7] })
+</code></pre>
+
+  <h3>⚙️ 3. Operadores Específicos de Arrays</h3>
+
+  <h4>🔸 $all — Todos os valores devem estar presentes</h4>
+  <pre><code>db.alunos.find({ matematica: { $all: [8, 7] } })</code></pre>
+  <p>Retorna alunos que possuem <strong>ambos os valores</strong> 8 e 7 em qualquer posição do array.</p>
+
+  <h4>🔸 $size — Verifica o tamanho do array</h4>
+  <pre><code>db.alunos.find({ matematica: { $size: 4 } })</code></pre>
+  <p>Retorna documentos cujo array tem exatamente <strong>4 elementos</strong>.</p>
+
+  <h3>📦 4. Arrays de Documentos (Subdocumentos)</h3>
+  <p>
+    Arrays também podem conter documentos complexos, como as variações de um produto.  
+    É possível filtrar por campos dentro desses subdocumentos:
+  </p>
+
+  <pre><code>// Produtos com variações acima de 30 unidades
+db.produtos.find({ "variacoes.qtd": { $gt: 30 } })
+</code></pre>
+
+  <p>
+    Isso retorna todos os produtos que possuem pelo menos uma variação com quantidade maior que 30.
+  </p>
+
+  <h3>🔍 5. Uso de $elemMatch</h3>
+  <p>
+    Quando é necessário combinar <strong>várias condições dentro do mesmo elemento do array</strong>, utiliza-se o operador <code>$elemMatch</code>:
+  </p>
+
+  <pre><code>// Variações que atendem múltiplas condições no mesmo documento
+db.produtos.find({
+  variacoes: { $elemMatch: { tamanho: { $gt: 40 }, cor: "Azul" } }
+}).pretty()
+</code></pre>
+
+  <p>
+    Sem o uso de <code>$elemMatch</code>, o MongoDB poderia buscar os valores em <em>diferentes elementos</em> do array, resultando em respostas incorretas.
+  </p>
+
+  <h3>📑 6. Seleção de Campos Específicos</h3>
+  <p>
+    Para mostrar ou ocultar campos específicos nos resultados, utiliza-se a <strong>projeção</strong>:
+  </p>
+
+  <pre><code>// Mostrar apenas nome e peso
+db.pessoas.find({}, { nome: 1, "caracteristicas.peso": 1 })
+
+// Ocultar cor dos olhos
+db.pessoas.find({}, { "caracteristicas.cor_dos_olhos": 0 })
+</code></pre>
+
+  <h3>🧱 7. Atualizações com Arrays</h3>
+  <p>
+    Também é possível atualizar documentos com base em condições de arrays:
+  </p>
+
+  <pre><code>// Adicionar campo "falta_provas" para quem tem apenas 2 notas em química
+db.alunos.updateOne(
+  { quimica: { $size: 2 } },
+  { $set: { falta_provas: true } }
+)
+</code></pre>
+
+  <p>
+    Isso adiciona a propriedade <code>falta_provas: true</code> aos alunos que possuem somente duas notas no campo <code>quimica</code>.
+  </p>
+
+  <h3>📘 Resumo dos Principais Operadores</h3>
+
+  <table>
+    <thead>
+      <tr><th>Tipo de Seleção</th><th>Exemplo</th><th>Descrição</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Campo embutido</strong></td><td><code>"caracteristicas.idade": { $gt: 30 }</code></td><td>Busca dentro de subdocumentos</td></tr>
+      <tr><td><strong>Valor no array</strong></td><td><code>{ matematica: 6 }</code></td><td>Verifica se o valor está presente</td></tr>
+      <tr><td><strong>Array completo</strong></td><td><code>{ matematica: [8,8,9,7] }</code></td><td>Compara o array inteiro</td></tr>
+      <tr><td><strong>Todos os valores</strong></td><td><code>{ matematica: { $all: [8,7] } }</code></td><td>Todos os valores devem existir</td></tr>
+      <tr><td><strong>Tamanho do array</strong></td><td><code>{ matematica: { $size: 4 } }</code></td><td>Verifica o tamanho exato</td></tr>
+      <tr><td><strong>Combinação no mesmo elemento</strong></td><td><code>$elemMatch</code></td><td>Aplica múltiplas condições em um único subdocumento</td></tr>
+    </tbody>
+  </table>
+
+</section>
+
 <section id="relacionamentos-mongodb">
   <h2>🔗 Relacionamentos no MongoDB</h2>
 
