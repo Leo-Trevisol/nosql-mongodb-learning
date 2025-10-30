@@ -1652,6 +1652,169 @@ db.books.updateMany(
   </table>
 </section>
 
+<section id="operadores-de-update">
+  <h2>🛠️ Operadores de <code>update</code> no MongoDB</h2>
+
+  <p>
+    Abaixo estão os principais operadores de <code>update</code>, com exemplos práticos e explicações detalhadas.
+  </p>
+
+  <h3>➕ 1. <code>$inc</code> — Incrementa ou decrementa valores numéricos</h3>
+  <p>
+    O operador <code>$inc</code> aumenta ou diminui o valor de um campo numérico.  
+    É ideal para contadores, pontuações ou métricas acumuladas.
+  </p>
+
+  <pre><code>// Inserindo dados
+db.blog.insertMany([
+  { author: "Matheus Battisti", postCount: 10, likesReceived: 150, categories: ["PHP", "JavaScript", "MongoDB"], active: true, maxPosts: 100 },
+  { author: "Jhon Doe", postCount: 219, likesReceived: 12890, categories: ["Java", "C#", "C"], active: false, maxPosts: 100 },
+  { author: "Maria Marin", postCount: 8, likesReceived: 12, categories: ["Linux", "DevOps", "Docker"], active: true, maxPosts: 100 }
+])
+
+// Incrementando
+db.blog.updateOne({ author: "Matheus Battisti" }, { $inc: { postCount: 2 } })
+
+// Decrementando
+db.blog.updateOne({ author: "Matheus Battisti" }, { $inc: { postCount: -5 } })</code></pre>
+
+  <p>
+    ✅ <strong>Vantagens:</strong> simples e eficiente para contadores.  
+    ⚠️ <strong>Atenção:</strong> o campo precisa ser numérico, caso contrário o MongoDB criará o campo com o valor informado.
+  </p>
+
+  <h3>📉 2. <code>$min</code> — Define o menor valor</h3>
+  <p>
+    O operador <code>$min</code> atualiza um campo <strong>somente se o novo valor for menor</strong> que o existente.
+  </p>
+
+  <pre><code>db.blog.insertOne({ author: "Maicon Santos", postCount: 50, likesReceived: 50 })
+
+// Atualiza apenas se o novo valor for menor
+db.blog.updateOne(
+  { author: "Maicon Santos" },
+  { $min: { postCount: 0, likesReceived: 0 } }
+)</code></pre>
+
+  <p>🧩 Útil para registrar valores mínimos, como pontuações, tempos ou preços.</p>
+
+  <h3>📈 3. <code>$max</code> — Define o maior valor</h3>
+  <p>
+    O operador <code>$max</code> faz o oposto de <code>$min</code>:  
+    ele atualiza o campo apenas se o novo valor for <strong>maior</strong> que o atual.
+  </p>
+
+  <pre><code>db.blog.updateOne(
+  { author: "Matheus Battisti" },
+  { $max: { maxPosts: 250 } }
+)</code></pre>
+
+  <p>✅ Excelente para registrar limites máximos, como recordes ou capacidades.</p>
+
+  <h3>✖️ 4. <code>$mul</code> — Multiplica valores numéricos</h3>
+  <p>
+    O operador <code>$mul</code> multiplica o valor atual de um campo pelo valor informado.
+  </p>
+
+  <pre><code>db.blog.updateOne(
+  { author: "Matheus Battisti" },
+  { $mul: { maxPosts: 2 } }
+)</code></pre>
+
+  <p>💡 Útil para reajustar valores em massa (ex.: reajuste de preços ou pontos).</p>
+
+  <h3>🔤 5. <code>$rename</code> — Renomeia campos</h3>
+  <p>
+    O operador <code>$rename</code> altera o nome de um campo em todos os documentos selecionados.
+  </p>
+
+  <pre><code>db.blog.updateMany({}, { $rename: { author: "author_fullname" } })</code></pre>
+
+  <p>📘 Ideal para refatorar nomes de campos sem perder dados.</p>
+
+  <h3>🚫 6. <code>$unset</code> — Remove campos</h3>
+  <p>
+    O operador <code>$unset</code> exclui um campo de um ou mais documentos.
+  </p>
+
+  <pre><code>db.blog.updateMany({}, { $unset: { active: "" } })</code></pre>
+
+  <p>⚠️ Remove permanentemente o campo, portanto use com cautela.</p>
+
+  <h3>🧩 7. <code>$addToSet</code> — Adiciona ao array evitando duplicação</h3>
+  <p>
+    O operador <code>$addToSet</code> insere um valor em um array <strong>somente se ele ainda não existir</strong>.
+  </p>
+
+  <pre><code>db.blog.updateOne(
+  { author_fullname: "Matheus Battisti" },
+  { $addToSet: { categories: { $each: ["PHP", "Vue"] } } }
+)</code></pre>
+
+  <p>✅ Garante que o array mantenha apenas valores únicos.</p>
+
+  <h3>⬅️ 8. <code>$pop</code> — Remove o primeiro ou último item do array</h3>
+  <p>
+    O operador <code>$pop</code> remove o primeiro (<code>-1</code>) ou o último (<code>1</code>) elemento de um array.
+  </p>
+
+  <pre><code>db.blog.updateOne(
+  { author_fullname: "Matheus Battisti" },
+  { $pop: { categories: -1 } }
+)</code></pre>
+
+  <p>💡 Útil para manter o tamanho fixo de um array (ex.: histórico limitado).</p>
+
+  <h3>📥 9. <code>$push</code> — Adiciona um elemento ao array</h3>
+  <p>
+    O operador <code>$push</code> insere novos valores no final de um array.
+  </p>
+
+  <pre><code>db.blog.updateOne(
+  { author_fullname: "Matheus Battisti" },
+  { $push: { categories: "Linux" } }
+)</code></pre>
+
+  <p>🧠 É possível adicionar vários elementos de uma vez usando <code>$each</code>:</p>
+
+  <pre><code>db.blog.updateOne(
+  { author_fullname: "Matheus Battisti" },
+  { $push: { categories: { $each: ["HTML", "CSS"] } } }
+)</code></pre>
+
+  <h3>🧹 10. <code>$pullAll</code> — Remove múltiplos valores de um array</h3>
+  <p>
+    O operador <code>$pullAll</code> remove todos os valores informados de um array.
+  </p>
+
+  <pre><code>db.blog.updateOne(
+  { author_fullname: "Maria Marin" },
+  { $pullAll: { categories: ["Linux", "Docker"] } }
+)</code></pre>
+
+  <p>🧽 Ideal para limpar arrays de valores indesejados de forma rápida.</p>
+
+  <h3>📘 Resumo dos principais operadores</h3>
+  <table>
+    <thead>
+      <tr><th>Operador</th><th>Função</th><th>Exemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>$inc</code></td><td>Incrementa ou decrementa valores</td><td><code>{$inc: {likes: 1}}</code></td></tr>
+      <tr><td><code>$min</code></td><td>Atualiza se o novo valor for menor</td><td><code>{$min: {score: 10}}</code></td></tr>
+      <tr><td><code>$max</code></td><td>Atualiza se o novo valor for maior</td><td><code>{$max: {record: 200}}</code></td></tr>
+      <tr><td><code>$mul</code></td><td>Multiplica valores numéricos</td><td><code>{$mul: {price: 1.1}}</code></td></tr>
+      <tr><td><code>$rename</code></td><td>Renomeia campos</td><td><code>{$rename: {name: "fullname"}}</code></td></tr>
+      <tr><td><code>$unset</code></td><td>Remove campos</td><td><code>{$unset: {temp: ""}}</code></td></tr>
+      <tr><td><code>$addToSet</code></td><td>Adiciona ao array sem duplicar</td><td><code>{$addToSet: {tags: "JS"}}</code></td></tr>
+      <tr><td><code>$pop</code></td><td>Remove primeiro ou último item</td><td><code>{$pop: {tags: -1}}</code></td></tr>
+      <tr><td><code>$push</code></td><td>Adiciona elementos no array</td><td><code>{$push: {tags: "HTML"}}</code></td></tr>
+      <tr><td><code>$pullAll</code></td><td>Remove vários valores do array</td><td><code>{$pullAll: {tags: ["A", "B"]}}</code></td></tr>
+    </tbody>
+  </table>
+
+</section>
+
 <section id="delecao-mongodb">
   <h2>🗑️ Deleção de Dados no MongoDB (Delete)</h2>
   
