@@ -2508,5 +2508,170 @@ db.pessoas.find({ _id: { $in: idsAlunos } })</code></pre>
 
 </section>
 
+<section id="indices-mongodb">
+  <h2>⚡ Índices no MongoDB</h2>
+
+  <p>
+    Os <strong>índices</strong> (<em>indexes</em>) são estruturas especiais que <strong>melhoram o desempenho</strong> das consultas em um banco de dados.  
+    Eles funcionam como um “atalho” para encontrar documentos mais rapidamente, sem precisar varrer toda a coleção (<em>full collection scan</em>).
+  </p>
+
+  <h3>📗 2. Criando um índice básico</h3>
+  <p>
+    O comando <code>createIndex()</code> cria um índice em um ou mais campos.  
+    O valor <code>1</code> indica ordenação ascendente, e <code>-1</code> descendente.
+  </p>
+
+  <pre><code>// Criando índice simples
+db.inspections.createIndex({ certificate_number: 1 })
+
+// Consulta utilizando o índice
+db.inspections.find({ certificate_number: 3030353 })</code></pre>
+
+  <p>
+    ✅ Agora as consultas por <code>certificate_number</code> serão otimizadas, pois o MongoDB usará o índice para localizar o documento rapidamente.
+  </p>
+
+  <h3>🏙️ 3. Índice em campos de documentos embutidos (Embedded Documents)</h3>
+  <p>
+    É possível criar índices em campos dentro de subdocumentos, utilizando a notação com ponto (<code>.</code>).
+  </p>
+
+  <pre><code>db.inspections.createIndex({ "address.city": 1 })</code></pre>
+
+  <p>
+    🔍 Isso permite que o MongoDB otimize buscas como:
+  </p>
+
+  <pre><code>db.inspections.find({ "address.city": "New York" })</code></pre>
+
+  <p>
+    Essa abordagem é especialmente útil quando há campos aninhados com alto volume de consultas.
+  </p>
+
+  <h3>📋 4. Verificando os índices de uma coleção</h3>
+  <p>
+    Para listar todos os índices de uma coleção específica, use:
+  </p>
+
+  <pre><code>db.inspections.getIndexes()</code></pre>
+
+  <p>
+    O MongoDB sempre cria automaticamente o índice <code>_id_</code> para garantir a unicidade dos documentos.
+  </p>
+
+  <h3>🗂️ 5. Listando índices de todo o banco</h3>
+  <p>
+    É possível listar os índices de todas as coleções do banco atual:
+  </p>
+
+  <pre><code>db.getCollectionNames().forEach(function(collection) {
+  indexes = db[collection].getIndexes();
+  print("Índices de " + collection + ":");
+  printjson(indexes);
+});</code></pre>
+
+  <p>
+    📘 Essa abordagem ajuda na auditoria e manutenção de índices em sistemas grandes.
+  </p>
+
+  <h3>🧹 6. Removendo índices específicos</h3>
+  <p>
+    Caso um índice não seja mais necessário, é possível removê-lo com:
+  </p>
+
+  <pre><code>db.inspections.dropIndex({ certificate_number: 1 })</code></pre>
+
+  <h3>💣 7. Removendo todos os índices de uma coleção</h3>
+  <p>
+    Para remover todos os índices (exceto o <code>_id</code>), use:
+  </p>
+
+  <pre><code>db.inspections.dropIndexes()</code></pre>
+
+  <h3>🔍 8. Verificando o uso do índice com <code>explain()</code></h3>
+  <p>
+    O método <code>explain()</code> mostra como o MongoDB executa uma consulta, indicando se um índice foi utilizado.
+  </p>
+
+  <pre><code>// Sem índice
+db.inspections.find({ certificate_number: 3030353 }).explain()
+
+// Criando índice
+db.inspections.createIndex({ certificate_number: 1 })
+
+// Com índice
+db.inspections.find({ certificate_number: 3030353 }).explain()</code></pre>
+
+  <p>
+    No campo <code>executionStats</code> do resultado, é possível observar a diferença no número de documentos analisados — um forte indicativo de ganho de performance.
+  </p>
+
+  <h3>🧩 9. Índices compostos (Compound Indexes)</h3>
+  <p>
+    Os <strong>índices compostos</strong> cobrem múltiplos campos e são úteis para consultas que filtram ou ordenam por mais de um campo.
+  </p>
+
+  <pre><code>db.inspections.createIndex({ certificate_number: 1, date: 1 })</code></pre>
+
+  <p>
+    🔸 A ordem dos campos é importante — consultas devem seguir a <em>ordem de prefixo</em> para aproveitar o índice.
+  </p>
+
+  <p><strong>Exemplo:</strong> este índice otimiza consultas por:</p>
+  <ul>
+    <li><code>{ certificate_number: X }</code></li>
+    <li><code>{ certificate_number: X, date: Y }</code></li>
+  </ul>
+
+  <p>Mas <em>não</em> ajuda em consultas apenas por <code>date</code>.</p>
+
+  <h3>💬 10. Índices de texto (Text Indexes)</h3>
+  <p>
+    Índices de texto permitem buscas avançadas por palavras ou frases dentro de campos textuais.
+  </p>
+
+  <pre><code>// Criando índice de texto
+db.inspections.createIndex({ business_name: "text" })
+
+// Buscando por texto
+db.inspections.find({ $text: { $search: "HOT DOG" } })
+
+// Verificando plano de execução
+db.inspections.find({ $text: { $search: "HOT DOG" } }).explain()</code></pre>
+
+  <p>
+    🧠 É possível combinar operadores como <code>$search</code>, <code>$text</code> e <code>$meta</code> para classificar resultados por relevância.
+  </p>
+
+  <h3>⚠️ 11. Por que não criar muitos índices?</h3>
+  <p>
+    Embora os índices acelerem consultas, eles <strong>aumentam o consumo de memória e armazenamento</strong>, e <strong>podem reduzir a performance de escrita</strong>, pois cada atualização precisa manter os índices sincronizados.
+  </p>
+
+  <p><strong>Boas práticas:</strong></p>
+  <ul>
+    <li>Crie índices apenas em campos realmente usados em consultas frequentes.</li>
+    <li>Evite índices redundantes (que cobrem os mesmos campos em diferentes ordens).</li>
+    <li>Use <code>explain()</code> para validar o impacto real de cada índice.</li>
+    <li>Monitore o tamanho e a eficiência dos índices com <code>db.collection.stats()</code>.</li>
+  </ul>
+
+  <h3>📘 Resumo dos principais comandos de índices</h3>
+  <table>
+    <thead>
+      <tr><th>Comando</th><th>Função</th><th>Exemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>createIndex()</code></td><td>Cria um índice</td><td><code>db.coll.createIndex({ campo: 1 })</code></td></tr>
+      <tr><td><code>getIndexes()</code></td><td>Lista índices da coleção</td><td><code>db.coll.getIndexes()</code></td></tr>
+      <tr><td><code>dropIndex()</code></td><td>Remove índice específico</td><td><code>db.coll.dropIndex({ campo: 1 })</code></td></tr>
+      <tr><td><code>dropIndexes()</code></td><td>Remove todos os índices</td><td><code>db.coll.dropIndexes()</code></td></tr>
+      <tr><td><code>explain()</code></td><td>Mostra como a query é executada</td><td><code>db.coll.find(...).explain()</code></td></tr>
+      <tr><td><code>text</code></td><td>Cria índice textual</td><td><code>db.coll.createIndex({ nome: "text" })</code></td></tr>
+    </tbody>
+  </table>
+
+</section>
 
 
