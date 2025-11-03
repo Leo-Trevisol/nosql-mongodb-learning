@@ -2674,4 +2674,187 @@ db.inspections.find({ $text: { $search: "HOT DOG" } }).explain()</code></pre>
 
 </section>
 
+<section id="aggregation-mongodb">
+  <h2>🔬 Framework de Aggregation no MongoDB</h2>
+  <p>
+    O <strong>Aggregation Framework</strong> do MongoDB é uma poderosa coleção de operadores e estágios
+    que permitem transformar, agrupar e analisar documentos por meio de um <em>pipeline</em>.
+    Em vez de executar várias consultas e pós-processar resultados na aplicação, você monta uma
+    sequência de estágios (um array) que processam os documentos passo a passo — filtros, projeções,
+    agrupamentos, amostragens e muito mais.
+  </p>
 
+  <h3>🧩 O que é um <em>pipeline</em>?</h3>
+  <p>
+    Um pipeline é um array de estágios (<code>[ {...}, {...} ]</code>). Cada estágio recebe
+    documentos do estágio anterior e emite documentos para o próximo. A ordem dos estágios importa
+    — filtros e projeções feitos cedo reduzem o volume de dados e melhoram a performance.
+  </p>
+
+  <pre><code>db.books.aggregate([
+  { $match: { categories: "Java" } },
+  { $sort: { pageCount: -1 } },
+  { $limit: 10 },
+  { $project: { title: 1, pageCount: 1 } }
+])</code></pre>
+
+  <h3>📦 Agrupamentos e "buckets"</h3>
+  <p>
+    <code>$bucket</code> e <code>$bucketAuto</code> são ótimos para criar faixas (bins) e entender
+    distribuições de dados (ex.: distribuição de número de páginas).
+  </p>
+
+  <pre><code>// Exemplo: bucket por pageCount, contando documentos por faixa
+db.books.aggregate([
+  {
+    $bucket: {
+      groupBy: "$pageCount",
+      boundaries: [100,200,300,400,500,600,700],
+      default: "OTHERS",
+      output: { "count": { $sum: 1 } }
+    }
+  }
+])
+</code></pre>
+
+  <pre><code>// bucketAuto: cria 'buckets' automaticamente com base na distribuição
+db.books.aggregate([
+  { $bucketAuto: { groupBy: "$pageCount", buckets: 5 } }
+])</code></pre>
+
+  <h3>⚙️ Estatísticas da collection</h3>
+  <p>
+    <code>$collStats</code> retorna estatísticas internas da coleção (tamanho, operações, execuções de queries etc.).
+  </p>
+  <pre><code>db.books.aggregate([
+  { $collStats: { queryExecStats: {}, count: {} } }
+]).pretty()</code></pre>
+
+  <h3>⬇️ Ordenação, limite, skip e sample</h3>
+  <p>
+    Use <code>$sort</code>, <code>$limit</code>, <code>$skip</code> e <code>$sample</code> para controlar
+    quais e quantos documentos serão retornados — essenciais em relatórios e URIs com paginação.
+  </p>
+
+  <pre><code>// pegar top 3 por pageCount
+db.books.aggregate([
+  { $sort: { pageCount: -1 } },
+  { $limit: 3 }
+]).pretty()
+
+// pular primeiros 5 resultados (paginação)
+db.books.aggregate([
+  { $sort: { pageCount: -1 } },
+  { $skip: 5 },
+  { $limit: 5 }
+]).pretty()
+
+// amostragem aleatória (size = 10)
+db.books.aggregate([
+  { $match: { categories: "Java" } },
+  { $project: { title: 1 } },
+  { $sample: { size: 10 } }
+]).pretty()</code></pre>
+
+  <h3>🔎 Filtragem e projeção dentro do pipeline</h3>
+  <p>
+    Use <code>$match</code> para filtrar documentos (equivalente a WHERE) e <code>$project</code>
+    para selecionar/transformar campos (equivalente a SELECT).
+  </p>
+
+  <pre><code>// ordenar, filtrar por autor, limitar e projetar apenas o título
+db.books.aggregate([
+  { $sort: { pageCount: -1 } },
+  { $match: { authors: "Gavin King" } },
+  { $limit: 3 },
+  { $project: { title: 1 } }
+]).pretty()</code></pre>
+
+  <h3>📤 Criando uma nova collection com <code>$out</code></h3>
+  <p>
+    O estágio <code>$out</code> grava o resultado do pipeline em outra collection (substitui a coleção de destino).
+    Útil para materializar resultados pesados e reutilizáveis.
+  </p>
+
+  <pre><code>db.books.aggregate([
+  { $match: { categories: "Java", pageCount: { $gt: 800 } } },
+  { $limit: 5 },
+  { $out: "bigjavabooks" }
+])
+
+// consultar a collection criada
+db.bigjavabooks.find().pretty()</code></pre>
+
+  <h3>🧰 Trabalhando com arrays: <code>$unwind</code> e <code>$sortByCount</code></h3>
+  <p>
+    <code>$unwind</code> "desconstrói" arrays em documentos individuais — essencial para agrupar por itens de arrays.
+    Combine com <code>$sortByCount</code> para obter contagens por categoria.
+  </p>
+
+  <pre><code>// desconstruir categories e contar ocorrências
+db.books.aggregate([
+  { $unwind: "$categories" },
+  { $sortByCount: "$categories" }
+])</code></pre>
+
+  <h3>🧾 Removendo campos do retorno: <code>$unset</code></h3>
+  <p>
+    Use <code>$unset</code> para excluir campos do documento final retornado pelo pipeline.
+  </p>
+
+  <pre><code>db.books.aggregate([
+  { $match: { categories: "PowerBuilder" } },
+  { $sort: { pageCount: -1 } },
+  { $unset: ["_id", "status"] }
+]).pretty()</code></pre>
+
+  <h3>🔢 Contando com <code>$count</code></h3>
+  <p>
+    O estágio <code>$count</code> retorna o número de documentos que passaram pelos estágios anteriores.
+  </p>
+
+  <pre><code>db.books.aggregate([
+  { $match: { categories: "Java" } },
+  { $project: { title: 1 } },
+  { $count: "Contagem" }
+]).pretty()</code></pre>
+
+  <h3>📌 Dicas de performance e boas práticas</h3>
+  <ul>
+    <li><strong>Filtre cedo:</strong> coloque <code>$match</code> o mais cedo possível para reduzir dados processados.</li>
+    <li><strong>Projete cedo:</strong> <code>$project</code> para manter apenas campos necessários.</li>
+    <li><strong>Use índices:</strong> índices sobre campos usados em <code>$match</code> aceleram o pipeline.</li>
+    <li><strong>Evite $out desnecessário:</strong> <code>$out</code> substitui coleções; faça backup se for crítico.</li>
+    <li><strong>$sample</strong> é eficiente para amostragem, mas sua semântica muda com tamanho e índice.</li>
+    <li><strong>Memória:</strong> pipelines complexos podem precisar de <code>allowDiskUse: true</code> em operações que ultrapassem limites de memória.</li>
+    <li><strong>Examine o plano:</strong> use <code>.explain()</code> para entender custo e uso de índices.</li>
+  </ul>
+
+  <h3>🧾 Resumo dos principais estágios</h3>
+  <table>
+    <thead>
+      <tr><th>Estágio</th><th>Função</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>$match</code></td><td>Filtra documentos (equivalente a WHERE)</td></tr>
+      <tr><td><code>$project</code></td><td>Seleciona/transforma campos (equivalente a SELECT)</td></tr>
+      <tr><td><code>$sort</code></td><td>Ordena documentos</td></tr>
+      <tr><td><code>$limit</code></td><td>Limita número de documentos</td></tr>
+      <tr><td><code>$skip</code></td><td>Pula N documentos (paginação)</td></tr>
+      <tr><td><code>$sample</code></td><td>Amostragem aleatória</td></tr>
+      <tr><td><code>$unwind</code></td><td>Desconstrói arrays</td></tr>
+      <tr><td><code>$bucket / $bucketAuto</code></td><td>Cria faixas (bins) para agrupamento</td></tr>
+      <tr><td><code>$out</code></td><td>Escreve resultado em outra collection</td></tr>
+      <tr><td><code>$collStats</code></td><td>Estatísticas da collection</td></tr>
+      <tr><td><code>$count</code></td><td>Conta documentos do pipeline</td></tr>
+      <tr><td><code>$unset</code></td><td>Remove campos do resultado</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    O Aggregation Framework é essencial para análises e transformações avançadas no MongoDB.
+    Comece com pipelines simples (<code>$match</code> + <code>$project</code>) e vá evoluindo para
+    estágios mais sofisticados (<code>$bucket</code>, <code>$unwind</code>, <code>$out</code>) conforme
+    suas necessidades de negócio.
+  </p>
+</section>
