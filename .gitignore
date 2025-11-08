@@ -1,0 +1,16 @@
+# Ignorar node_modules em qualquer lugar do projeto
+**/node_modules/
+
+# Manter variáveis de ambiente fora do versionamento
+**/.env
+
+# Ignorar diretório gerado do Prisma (independente de onde esteja)
+**/src/generated/prisma/
+
+# Ignorar bancos SQLite em qualquer lugar
+**/db/*.sqlite
+**/db/*.sqlite-journal
+
+# Ignorar migrations do Prisma em qualquer nível
+**/prisma/migrations/
+
