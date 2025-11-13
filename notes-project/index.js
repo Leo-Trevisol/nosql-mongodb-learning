@@ -10,10 +10,14 @@ app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 
+const notesRoutes = require('./routes/notes');
+
 // Rotas
 app.get('/', (req, res) => {
   res.render('home');
 });
+
+app.use('/notes', notesRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
