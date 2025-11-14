@@ -5,10 +5,15 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 8000;
 
+//DB
+
+const db = require('./db/connections');
+
 // Template engine
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const notesRoutes = require('./routes/notes');
 
@@ -19,6 +24,13 @@ app.get('/', (req, res) => {
 
 app.use('/notes', notesRoutes);
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+db.initDb((err, dbClient) => {
+  if (err) {
+    console.log(err);
+  }else{
+    console.log("DB connected");
+    app.listen(port, () => {
+      console.log(`App listening at http://localhost:${port}`);
+    });
+  }
+})
