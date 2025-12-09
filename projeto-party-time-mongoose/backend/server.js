@@ -7,6 +7,8 @@ const cors = require('cors');
 
 //Routes
 
+const authRoutes = require("./routes/authRoutes");
+
 //Middlewares
 
 //Config
@@ -18,6 +20,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+app.use("/api/auth", authRoutes);
 
 //Atrelar rotas no express
 
