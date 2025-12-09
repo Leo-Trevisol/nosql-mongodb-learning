@@ -2858,3 +2858,143 @@ db.books.aggregate([
     suas necessidades de negócio.
   </p>
 </section>
+<section id="mongoose">
+  <h2>🧬 Trabalhando com Mongoose no MongoDB</h2>
+  <p>
+    O <strong>Mongoose</strong> é uma biblioteca ODM (<em>Object Data Modeling</em>) para Node.js que facilita 
+    a interação com o MongoDB. Ele adiciona uma camada de estrutura ao banco NoSQL, permitindo definir 
+    <strong>schemas</strong>, <strong>models</strong>, validações, middlewares e métodos personalizados — tudo 
+    isso mantendo a flexibilidade do MongoDB.
+  </p>
+
+  <h3>📘 Por que usar Mongoose?</h3>
+  <ul>
+    <li><strong>Define schemas</strong>: você estrutura seus documentos, mesmo em um banco NoSQL.</li>
+    <li><strong>Valida dados automaticamente</strong>: antes de salvar no banco.</li>
+    <li><strong>Abstrai a complexidade</strong> das operações do driver nativo do MongoDB.</li>
+    <li><strong>Models reutilizáveis</strong>: encapsula comportamento da coleção.</li>
+    <li><strong>Middlewares</strong>: executa lógica antes e depois de salvar, atualizar etc.</li>
+    <li><strong>Consultas encadeáveis</strong> e API mais amigável que o driver nativo.</li>
+  </ul>
+
+  <h3>🔗 Conectando ao MongoDB com Mongoose</h3>
+  <p>
+    A conexão é simples e retorna uma <code>Promise</code>. Em versões recentes, não é necessário passar 
+    opções adicionais:
+  </p>
+
+  <pre><code>const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/test')
+  .then(() => console.log("Connected to MongoDB with Mongoose!"))
+  .catch(err => console.error("Connection error:", err));
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => console.log('Connected to MongoDB with Mongoose!'));
+</code></pre>
+
+  <h3>🏗️ Criando um Schema</h3>
+  <p>
+    Um <strong>Schema</strong> define a estrutura dos documentos dentro de uma collection. 
+    É onde você especifica os campos e seus tipos:
+  </p>
+
+  <pre><code>const pessoaSchema = new mongoose.Schema({
+  nome: String,
+  idade: Number,
+  profissao: String
+});
+</code></pre>
+
+  <h3>📦 Criando um Model</h3>
+  <p>
+    O <strong>Model</strong> é a representação da collection no código. 
+    Com ele você cria, lê, atualiza e deleta documentos.
+  </p>
+
+  <pre><code>const pessoaModel = mongoose.model('Pessoa', pessoaSchema);
+</code></pre>
+
+  <h3>➕ Inserindo documentos</h3>
+
+  <pre><code>// Criando um documento individual
+const leo = new pessoaModel({
+  nome: 'Leonardo',
+  idade: 22,
+  profissao: 'Desenvolvedor'
+});
+
+leo.save()
+  .then(() => console.log('Pessoa salva no banco de dados!'))
+  .catch(err => console.error('Erro ao salvar pessoa:', err));
+
+// Inserindo vários documentos de uma vez
+pessoaModel.insertMany([
+  { nome: 'Ana', idade: 28, profissao: 'Designer' },
+  { nome: 'Carlos', idade: 35, profissao: 'Gerente' },
+  { nome: 'Mariana', idade: 30, profissao: 'Engenheira' }
+]);
+</code></pre>
+
+  <h3>🔍 Consultando documentos</h3>
+
+  <pre><code>// Encontrar várias pessoas
+pessoaModel.find({ nome: 'Leonardo' })
+  .then(pessoas => console.log('Pessoas encontradas:', pessoas));
+
+// Encontrar apenas uma pessoa
+async function getPessoa(nome) {
+  return await pessoaModel.findOne({ nome });
+}
+
+getPessoa("Leonardo")
+  .then(pessoa => console.log('Pessoa encontrada:', pessoa));
+</code></pre>
+
+  <h3>🗑️ Deletando documentos</h3>
+
+  <pre><code>pessoaModel.deleteOne({ nome: 'Leonardo' })
+  .then(() => console.log('Pessoa deletada!'));
+</code></pre>
+
+  <h3>✏️ Atualizando documentos</h3>
+
+  <pre><code>pessoaModel.updateOne(
+  { nome: 'Ana' },
+  { idade: 29 }
+).then(() => console.log('Pessoa atualizada!'));
+</code></pre>
+
+  <h3>⚙️ Consultas avançadas com <code>where</code></h3>
+  <p>
+    Mongoose permite escrever queries encadeáveis mais legíveis:
+  </p>
+
+  <pre><code>async function getPessoaNomeIdade(nome, idade) {
+  return await pessoaModel
+    .where('nome').equals(nome)
+    .where('idade').equals(idade)
+    .exec();
+}
+</code></pre>
+
+  <h3>🧾 Resumo do que o Mongoose oferece</h3>
+  <ul>
+    <li><strong>Schemas</strong> para organizar os dados.</li>
+    <li><strong>Models</strong> que representam collections.</li>
+    <li><strong>Métodos de CRUD</strong> intuitivos (<code>.find()</code>, <code>.save()</code>, <code>.updateOne()</code>…).</li>
+    <li><strong>Validações automáticas</strong> antes de persistir dados.</li>
+    <li><strong>Middlewares</strong> para lógica automática.</li>
+    <li><strong>Consultas encadeáveis</strong> e expressivas.</li>
+    <li><strong>Integração perfeita com Node.js + JavaScript moderno</strong>.</li>
+  </ul>
+
+  <p>
+    O Mongoose é ideal para projetos que precisam do poder e flexibilidade do MongoDB, 
+    mas com a segurança e organização de schemas e models. Ele facilita muito o 
+    desenvolvimento de APIs, sistemas de cadastro, dashboards e qualquer aplicação 
+    que requer persistência estruturada.
+  </p>
+</section>
