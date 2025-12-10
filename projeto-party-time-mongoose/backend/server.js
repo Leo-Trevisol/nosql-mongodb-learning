@@ -11,6 +11,9 @@ const authRouter = require("./routes/authRoutes");
 
 const userRouter = require("./routes/userRoutes");
 
+const partyRouter = require("./routes/partyRoutes");
+
+
 
 //Middlewares
 
@@ -24,8 +27,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+//Routes
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/party", partyRouter);
+
 
 
 //Atrelar rotas no express
