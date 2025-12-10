@@ -86,8 +86,6 @@ router.post("/login", async (req, res) => {
         return res.status(400).json({ error: "Invalid password" });
     }
 
-      const newUser = await user.save();
-
         //create token
         const token = jwt.sign(
             {
@@ -98,9 +96,8 @@ router.post("/login", async (req, res) => {
         );
 
         //return token
-        res.json({error : null, msg: "Login successful", token: token});
+        res.json({error : null, msg: "Login successful", token: token, userId: user._id});
 
 });
-
 
 module.exports = router;

@@ -7,7 +7,10 @@ const cors = require('cors');
 
 //Routes
 
-const authRoutes = require("./routes/authRoutes");
+const authRouter = require("./routes/authRoutes");
+
+const userRouter = require("./routes/userRoutes");
+
 
 //Middlewares
 
@@ -21,7 +24,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
+
 
 //Atrelar rotas no express
 
