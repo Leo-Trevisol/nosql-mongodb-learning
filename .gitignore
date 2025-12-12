@@ -16,3 +16,11 @@
 
 **/package-lock.json
 
+# Build da aplicação (Vue CLI)
+**/dist/
+
+# Build de apps em Vite (se usar)
+**/vite.config.ts.time
+
+# Cache do bundler (Vue CLI)
+**/node_modules/.cache/
