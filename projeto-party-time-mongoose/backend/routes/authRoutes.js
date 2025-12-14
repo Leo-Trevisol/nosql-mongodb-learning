@@ -10,7 +10,7 @@ router.post("/register", async (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
+    const confirmPassword = req.body.confirmpassword;
 
     //check for required fields
     if (!name || !email || !password || !confirmPassword) {
