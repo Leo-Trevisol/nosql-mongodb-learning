@@ -571,88 +571,6 @@ Clique em Logout → Vuex.commit("logout") → Limpa estado e localStorage →
 
 <hr/>
 
-<section id="problemas-conhecidos">
-  <h2>⚠️ Problemas Conhecidos e Correções Necessárias</h2>
-  
-  <h3>🔴 Críticos (Impedem Funcionamento)</h3>
-  <ul>
-    <li><strong>EditParty.vue (linha 30):</strong> Rota inexistente <code>/api/party/userparty/${id}</code> → Corrigir para <code>/api/party/userparties/${id}</code></li>
-    <li><strong>PartyForm.vue (linha 90):</strong> Campo <code>user_id</code> → Corrigir para <code>userId</code> (backend espera sem underscore)</li>
-  </ul>
-  
-  <h3>🟡 Importantes (Melhorias Necessárias)</h3>
-  <ul>
-    <li><strong>Falta de service layer:</strong> Chamadas fetch repetitivas em múltiplos componentes</li>
-    <li><strong>Validação client-side:</strong> Formulários sem validação antes do envio</li>
-    <li><strong>Loading states:</strong> Ausência de indicadores de carregamento</li>
-    <li><strong>Tratamento de erros:</strong> Pode ser mais robusto e amigável</li>
-    <li><strong>Componentização:</strong> Algumas views tem lógica muito complexa</li>
-  </ul>
-  
-  <h3>🟢 Sugestões de Melhoria</h3>
-  <ul>
-    <li>Implementar service layer para API calls</li>
-    <li>Adicionar validação com Vuelidate ou similar</li>
-    <li>Criar componentes de loading e skeleton screens</li>
-    <li>Implementar refresh token automático</li>
-    <li>Adicionar paginação nas listagens</li>
-    <li>Criar mixins para lógica repetitiva</li>
-  </ul>
-</section>
-
-<hr/>
-
-<section id="arquitetura-recomendada">
-  <h2>🏗️ Arquitetura Recomendada</h2>
-  
-  <h3>📁 Nova Estrutura Sugerida</h3>
-  <pre>
-src/
-├── services/           # Camada de serviço
-│   ├── api.js         # Configuração base do axios/fetch
-│   ├── auth.js        # Serviços de autenticação
-│   ├── party.js       # Serviços de eventos
-│   └── user.js        # Serviços de usuário
-├── utils/             # Utilitários
-│   ├── validators.js  # Validações
-│   ├── formatters.js  # Formatação de dados
-│   └── constants.js   # Constantes da aplicação
-├── composables/       # Composition API functions
-│   ├── useAuth.js     # Lógica de autenticação
-│   ├── useFetch.js    # Lógica de fetch
-│   └── useForm.js     # Lógica de formulários
-└── ... estrutura atual
-  </pre>
-  
-  <h3>🔧 Service Layer Exemplo</h3>
-  <pre>
-// services/api.js
-const API_URL = 'http://localhost:3000/api';
-
-export default {
-  async request(endpoint, method = 'GET', data = null, requiresAuth = false) {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    
-    if (requiresAuth) {
-      const token = store.getters.token;
-      headers['auth-token'] = token;
-    }
-    
-    const config = {
-      method,
-      headers,
-      body: data ? JSON.stringify(data) : null
-    };
-    
-    const response = await fetch(`${API_URL}${endpoint}`, config);
-    return await response.json();
-  }
-};
-  </pre>
-</section>
-
 <hr/>
 
 <section id="consideracoes-tecnicas">
@@ -717,4 +635,3 @@ export default {
   <p><strong>Frontend desenvolvido com Vue.js para aprendizado de desenvolvimento web moderno</strong></p>
   <p>Interface completa para o sistema Party Time 🎉</p>
 </div>
-```
