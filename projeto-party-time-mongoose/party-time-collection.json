@@ -1,0 +1,449 @@
+{
+  "info": {
+    "name": "Party Time API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "API completa para gerenciamento de eventos com autenticação JWT, upload de imagens e CRUD"
+  },
+  "item": [
+    {
+      "name": "🏠 Base URL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": [""]
+        },
+        "description": "Verifica se a API está rodando"
+      }
+    },
+    {
+      "name": "🔐 Autenticação",
+      "item": [
+        {
+          "name": "📝 Registrar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"João Silva\",\n    \"email\": \"joao@email.com\",\n    \"password\": \"senha123\",\n    \"confirmpassword\": \"senha123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Cria uma nova conta de usuário. Retorna token JWT."
+          }
+        },
+        {
+          "name": "🔑 Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"joao@email.com\",\n    \"password\": \"senha123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Autentica usuário e retorna token JWT e userId."
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Usuários",
+      "item": [
+        {
+          "name": "👁️ Buscar Usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}",
+                "type": "text",
+                "description": "Token JWT obtido no login/registro"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/user/{{user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "user", "{{user_id}}"],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "ID_DO_USUARIO",
+                  "description": "ID do usuário (ObjectId do MongoDB)"
+                }
+              ]
+            },
+            "description": "Busca informações do usuário (exclui senha). Token obrigatório."
+          }
+        },
+        {
+          "name": "✏️ Atualizar Usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": \"{{user_id}}\",\n    \"name\": \"Novo Nome\",\n    \"email\": \"novo@email.com\",\n    \"password\": \"novaSenha123\",\n    \"confirmPassword\": \"novaSenha123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "user"]
+            },
+            "description": "Atualiza dados do usuário. Password opcional. Token obrigatório."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎉 Eventos (Parties)",
+      "item": [
+        {
+          "name": "➕ Criar Novo Evento (com imagens)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Festa de Aniversário",
+                  "type": "text",
+                  "description": "Título do evento"
+                },
+                {
+                  "key": "description",
+                  "value": "Vai ser uma festa incrível com muitas surpresas!",
+                  "type": "text"
+                },
+                {
+                  "key": "party_date",
+                  "value": "2024-12-31T20:00:00",
+                  "type": "text",
+                  "description": "Data no formato ISO"
+                },
+                {
+                  "key": "privacy",
+                  "value": "false",
+                  "type": "text",
+                  "description": "false = público, true = privado"
+                },
+                {
+                  "key": "photos",
+                  "type": "file",
+                  "description": "Upload de múltiplas imagens"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/party",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party"]
+            },
+            "description": "Cria um novo evento. Aceita múltiplas imagens no campo 'photos'. Token obrigatório."
+          }
+        },
+        {
+          "name": "🌍 Buscar Todos Eventos Públicos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/party/all",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party", "all"]
+            },
+            "description": "Lista todos os eventos públicos (privacy: false). Não requer autenticação."
+          }
+        },
+        {
+          "name": "📋 Meus Eventos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/party/userparties",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party", "userparties"]
+            },
+            "description": "Lista todos os eventos do usuário autenticado. Token obrigatório."
+          }
+        },
+        {
+          "name": "🔍 Buscar Meu Evento Específico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/party/userparties/{{party_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party", "userparties", "{{party_id}}"],
+              "variable": [
+                {
+                  "key": "party_id",
+                  "value": "ID_DO_EVENTO",
+                  "description": "ID do evento (ObjectId do MongoDB)"
+                }
+              ]
+            },
+            "description": "Busca um evento específico do usuário autenticado. Token obrigatório."
+          }
+        },
+        {
+          "name": "👁️ Buscar Evento por ID (Inteligente)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}",
+                "type": "text",
+                "description": "Opcional para eventos públicos, obrigatório para privados"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/party/{{party_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party", "{{party_id}}"],
+              "variable": [
+                {
+                  "key": "party_id",
+                  "value": "ID_DO_EVENTO"
+                }
+              ]
+            },
+            "description": "Busca evento por ID. Se for público: não precisa de token. Se for privado: precisa de token e ser dono."
+          }
+        },
+        {
+          "name": "✏️ Atualizar Evento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "id",
+                  "value": "{{party_id}}",
+                  "type": "text",
+                  "description": "ID do evento a ser atualizado"
+                },
+                {
+                  "key": "title",
+                  "value": "Festa Atualizada",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Descrição atualizada do evento",
+                  "type": "text"
+                },
+                {
+                  "key": "party_date",
+                  "value": "2024-12-31T21:00:00",
+                  "type": "text"
+                },
+                {
+                  "key": "privacy",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "userId",
+                  "value": "{{user_id}}",
+                  "type": "text",
+                  "description": "ID do usuário dono do evento"
+                },
+                {
+                  "key": "photos",
+                  "type": "file",
+                  "description": "Novas fotos (opcional - substitui as antigas)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/party",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party"]
+            },
+            "description": "Atualiza um evento existente. Verifica se usuário é dono. Upload de novas fotos é opcional."
+          }
+        },
+        {
+          "name": "🗑️ Deletar Evento",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "auth-token",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": \"{{party_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/party",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "party"]
+            },
+            "description": "Deleta um evento. Verifica se usuário é dono. Token obrigatório."
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "auth_token",
+      "value": "SEU_TOKEN_JWT_AQUI",
+      "type": "string",
+      "description": "Token JWT obtido no login/register"
+    },
+    {
+      "key": "user_id",
+      "value": "ID_DO_USUARIO_AQUI",
+      "type": "string",
+      "description": "ID do usuário (ObjectId do MongoDB)"
+    },
+    {
+      "key": "party_id",
+      "value": "ID_DO_EVENTO_AQUI",
+      "type": "string",
+      "description": "ID do evento (ObjectId do MongoDB)"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "console.log('Party Time API Collection')"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});"
+        ]
+      }
+    }
+  ]
+}
