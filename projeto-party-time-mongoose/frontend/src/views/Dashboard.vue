@@ -1,14 +1,24 @@
 <template>
   <div class="dashboard">
     <div class="title-container">
+        <!-- Título da área do usuário -->
         <h1>Gerencie seus eventos</h1>
+
+        <!-- Navegação para cadastro de uma nova festa -->
         <router-link to="/newparty" class="btn">Cadastrar Festa</router-link>
     </div>
+
+    <!-- Exibe a tabela se o usuário tiver festas cadastradas -->
     <div v-if="parties.length > 0">
         <DataTable :parties="parties" />
     </div>
+
+    <!-- Mensagem exibida quando não há festas -->
     <div v-else>
-        <p>Você ainda não tem festas cadastradas, <router-link to="/newparty">clique aqui para criar a sua festa!</router-link></p>
+        <p>
+          Você ainda não tem festas cadastradas,
+          <router-link to="/newparty">clique aqui para criar a sua festa!</router-link>
+        </p>
     </div>
   </div>
 </template>
@@ -22,15 +32,17 @@ export default {
     },
     data() {
         return {
+            // Lista de festas do usuário logado
             parties: []
         }
     },
     methods: {
         async getParties() {
 
-            // get token from state
+            // Recupera o token JWT armazenado no Vuex
             const token = this.$store.getters.token;
 
+            // Requisição para buscar as festas do usuário autenticado
             await fetch("http://localhost:3000/api/party/userparties", {
                 method: "GET",
                 headers: { 
@@ -40,9 +52,8 @@ export default {
             })
             .then((resp) => resp.json())
             .then((data) => {
-
+                // Atualiza o estado com as festas retornadas pela API
                 this.parties = data.parties;
-
             })
             .catch((err) => {
                 console.log(err);
@@ -51,13 +62,14 @@ export default {
         }
     },
     created() {
-        // load user parties
+        // Carrega as festas assim que a view é criada
         this.getParties();
     },
 }
 </script>
 
 <style scoped>
+    /* Estilização específica da dashboard */
     .dashboard {
         padding: 50px;
         padding-bottom: 100px;
@@ -70,6 +82,7 @@ export default {
         margin-bottom: 40px;
     }
     
+    /* Botão padrão de ação */
     .btn {
         padding: 10px 16px;
         background-color: #000;
@@ -81,5 +94,4 @@ export default {
         cursor: pointer;
         transition: .5s;
     }
-    
 </style>

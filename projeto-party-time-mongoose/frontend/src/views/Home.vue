@@ -1,32 +1,63 @@
 <template>
   <div class="home">
+    <!-- Título da página inicial -->
     <h1>Veja as últimas festas</h1>
+
+    <!-- Listagem das festas públicas -->
     <div class="parties-container">
-        <div v-for="(party, index) in parties" :key="index" class="party-container">
-            <div class="party-img" :style="{'background-image': 'url(' + party.photos[0] +')'}"></div>
-            <router-link :to="`/party/${party._id}`" class="party-title">{{ party.title }}</router-link>
+        <div
+          v-for="(party, index) in parties"
+          :key="index"
+          class="party-container"
+        >
+            <!-- Imagem da festa (primeira foto cadastrada) -->
+            <div
+              class="party-img"
+              :style="{'background-image': 'url(' + party.photos[0] +')'}"
+            ></div>
+
+            <!-- Link para a página de detalhes da festa -->
+            <router-link
+              :to="`/party/${party._id}`"
+              class="party-title"
+            >
+              {{ party.title }}
+            </router-link>
+
+            <!-- Data formatada da festa -->
             <p class="party-date">Data: {{ party.partyDate }}</p>
-            <router-link :to="`/party/${party._id}`" class="party-details-btn">Ver Mais</router-link>
+
+            <!-- Botão para ver mais detalhes -->
+            <router-link
+              :to="`/party/${party._id}`"
+              class="party-details-btn"
+            >
+              Ver Mais
+            </router-link>
         </div>        
     </div>
+
+    <!-- Mensagem exibida quando não há festas públicas -->
     <p v-if="parties.length == 0">Não há festas ainda...</p>
   </div>
 </template>
-<script>
 
+<script>
 export default {
     data() {
         return {
+            // Lista de festas públicas
             parties: []
         }
     },
     created() {
-        // load public parties
+        // Carrega as festas públicas ao entrar na página
         this.getParties();
     },
     methods: {
         async getParties() {
 
+            // Requisição para buscar todas as festas públicas
             await fetch(`http://localhost:3000/api/party/all`, {
                 method: "GET",
                 headers: { 
@@ -36,18 +67,22 @@ export default {
             .then((resp) => resp.json())
             .then((data) => {
 
-                data.parties.forEach((party, index) => {
+                // Formata data e corrige URLs das imagens
+                data.parties.forEach((party) => {
 
-                    if(party.partyDate) {
+                    if (party.partyDate) {
                         party.partyDate = new Date(party.partyDate).toLocaleDateString();
                     }
 
                     party.photos.forEach((photo, index) => {
-                        party.photos[index] = photo.replace("public", "http://localhost:3000").replaceAll("\\", "/");
+                        party.photos[index] = photo
+                          .replace("public", "http://localhost:3000")
+                          .replaceAll("\\", "/");
                     });
 
                 });
 
+                // Atualiza o estado com as festas
                 this.parties = data.parties;
 
             })
@@ -59,8 +94,9 @@ export default {
     }
 }
 </script>
-<style scoped>
 
+<style scoped>
+    /* Estilo da página inicial */
     .home {
         text-align: center;
         padding-top: 40px;
@@ -119,21 +155,4 @@ export default {
     .party-details-btn:hover {
         background-color: #141619;
     }
-    
-    #party-1 {
-        background-image: url('../../public/img/party1.jpg');
-    }
-
-    #party-2 {
-        background-image: url('../../public/img/party2.jpg');
-    }
-
-    #party-3 {
-        background-image: url('../../public/img/party3.jpg');
-    }
-
-    #party-4 {
-        background-image: url('../../public/img/party4.jpg');
-    }
-
 </style>

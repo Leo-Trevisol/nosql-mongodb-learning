@@ -1,15 +1,33 @@
 <template>
     <div>
+        <!-- Componente de mensagens de sucesso/erro -->
         <Message :msg="msg" :msgClass="msgClass" />
+
+        <!-- Formulário de login -->
         <form id="login-form" @submit="login($event)">
             <div class="input-container">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" v-model="email" placeholder="Digite o seu e-mail">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  v-model="email"
+                  placeholder="Digite o seu e-mail"
+                >
             </div>
+
             <div class="input-container">
                 <label for="password">Senha:</label>
-                <input type="password" id="password" name="password" v-model="password" placeholder="Digite sua senha">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  v-model="password"
+                  placeholder="Digite sua senha"
+                >
             </div>
+
+            <!-- Botão reutilizável de submit -->
             <InputSubmit text="Entrar" />
         </form>
     </div>
@@ -27,16 +45,21 @@ export default {
   },
   data() {
       return {
+        // Dados do formulário
         email: null,
         password: null,
+
+        // Mensagens de feedback
         msg: null,
         msgClass: null,
       }
   },
   methods: {
     async login(e) {
+        // Impede o reload da página
         e.preventDefault();
 
+        // Monta o payload para a API
         const data = {
             email: this.email,
             password: this.password
@@ -44,6 +67,7 @@ export default {
 
         const jsonData = JSON.stringify(data);
 
+        // Requisição de login para o backend
         await fetch("http://localhost:3000/api/auth/login", {
             method: "POST",
             headers: { "Content-type": "application/json" },
@@ -54,24 +78,30 @@ export default {
 
             let auth = false;
 
+            // Caso ocorra erro no login
             if(data.error) {
                 this.msg = data.error;
                 this.msgClass = "error";
             } else {
+                // Login realizado com sucesso
                 auth = true;
                 this.msg = data.msg;
                 this.msgClass = "success";
 
-                // Emit event for auth an user
-                this.$store.commit("authenticate", {token: data.token, userId: data.userId});
+                // Salva token e userId no Vuex (autenticação)
+                this.$store.commit("authenticate", {
+                  token: data.token,
+                  userId: data.userId
+                });
             }
             
             setTimeout(() => {
 
                 if(!auth) {
+                    // Limpa mensagem de erro
                     this.msg = null;                                   
                 } else {
-                    // redirect
+                    // Redireciona para o dashboard
                     this.$router.push('dashboard');
                 }
                 
@@ -81,13 +111,13 @@ export default {
         .catch((err) => {
             console.log(err);
         })
-
     }
   }
 }
 </script>
 
 <style scoped>
+    /* Estilização do formulário de login */
     #login-form {
         max-width: 400px;
         margin: 0 auto;
@@ -111,5 +141,4 @@ export default {
         padding: 10px;
         border: 1px solid #e8e8e8;
     }
-    
 </style>

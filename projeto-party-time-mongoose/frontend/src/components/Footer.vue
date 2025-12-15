@@ -1,4 +1,5 @@
 <template>
+  <!-- Rodapé fixo da aplicação -->
   <footer>
     <h3>Party Time &copy; 2021</h3>
     <p>O melhor local para compartilhar seus eventos!</p>
@@ -7,11 +8,13 @@
 
 <script>
 export default {
+  // Componente de rodapé reutilizado em todas as páginas
   name: "Footer"
 }
 </script>
 
 <style scoped>
+  /* Estilo visual do rodapé */
   footer {
     background-color: #25282e;
     height: 300px;
@@ -31,5 +34,4 @@ export default {
   footer p {
     color: #c1b696;
   }
-
 </style>
