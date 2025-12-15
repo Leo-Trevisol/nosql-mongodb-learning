@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
-//register an user
+// Rota responsável pelo cadastro de usuários
 router.post("/register", async (req, res) => {
 
     const name = req.body.name;
@@ -12,38 +12,37 @@ router.post("/register", async (req, res) => {
     const password = req.body.password;
     const confirmPassword = req.body.confirmpassword;
 
-    //check for required fields
+    // Valida se todos os campos obrigatórios foram preenchidos
     if (!name || !email || !password || !confirmPassword) {
         return res.status(400).json({ error: "Please fill in all fields" });
     }
 
-    //checjk if passwords match
+    // Verifica se as senhas coincidem
     if (password !== confirmPassword) {
         return res.status(400).json({ error: "Passwords do not match" });
     }
 
-    //check if user exists
+    // Verifica se o email já está cadastrado
     const emailExists = await User.findOne({ email: email });
     if (emailExists) {
         return res.status(400).json({ error: "Email already registered" });
     }
 
-    //create password hash
+    // Gera hash da senha usando bcrypt
     const salt = await bcrypt.genSalt(12);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    //create user object
+    // Cria o usuário com a senha criptografada
     const user = new User({
         name,
         email,
         password: passwordHash,
     });
 
-    try{
-
+    try {
         const newUser = await user.save();
 
-        //create token
+        // Gera o token JWT após o cadastro
         const token = jwt.sign(
             {
                 name: newUser.name,
@@ -52,52 +51,53 @@ router.post("/register", async (req, res) => {
             "nossosecret"
         );
 
-        //return token
-        res.json({error : null, msg: "User created successfully", token: token});
+        // Retorna token para autenticação no frontend
+        res.json({ error: null, msg: "User created successfully", token: token });
 
-    }catch(err){
+    } catch (err) {
         res.status(400).json({ error: err.message });
     }
-
 });
 
-//login an user
-
+// Rota responsável pelo login de usuários
 router.post("/login", async (req, res) => {
 
     const email = req.body.email;
     const password = req.body.password;
 
-    //check for required fields
+    // Valida campos obrigatórios
     if (!email || !password) {
         return res.status(400).json({ error: "Please fill in all fields" });
     }
 
-    //check if user exists
+    // Busca usuário pelo email
     const user = await User.findOne({ email: email });
-
     if (!user) {
         return res.status(400).json({ error: "User not found" });
     }
 
-    //check if password matches
+    // Compara a senha informada com o hash salvo no banco
     const checkPassword = await bcrypt.compare(password, user.password);
     if (!checkPassword) {
         return res.status(400).json({ error: "Invalid password" });
     }
 
-        //create token
-        const token = jwt.sign(
-            {
-                name: user.name,
-                id: user._id,
-            },
-            "nossosecret"
-        );
+    // Gera token JWT para autenticação
+    const token = jwt.sign(
+        {
+            name: user.name,
+            id: user._id,
+        },
+        "nossosecret"
+    );
 
-        //return token
-        res.json({error : null, msg: "Login successful", token: token, userId: user._id});
-
+    // Retorna token e id do usuário para o frontend
+    res.json({
+        error: null,
+        msg: "Login successful",
+        token: token,
+        userId: user._id
+    });
 });
 
 module.exports = router;
