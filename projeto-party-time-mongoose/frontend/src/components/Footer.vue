@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <h3>Party Time &copy; 2021</h3>
+    <h3>Party Time &copy; 2025</h3>
     <p>O melhor local para compartilhar seus eventos!</p>
   </footer>
 </template>
