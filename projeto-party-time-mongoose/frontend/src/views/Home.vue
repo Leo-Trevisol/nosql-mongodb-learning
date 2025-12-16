@@ -1,60 +1,30 @@
 <template>
   <div class="home">
-    <!-- Título da página inicial -->
     <h1>Veja as últimas festas</h1>
-
-    <!-- Lista de festas públicas -->
     <div class="parties-container">
-        <div
-          v-for="(party, index) in parties"
-          :key="index"
-          class="party-container"
-        >
-            <!-- Imagem da festa (primeira foto) -->
-            <div
-              class="party-img"
-              :style="{'background-image': 'url(' + party.photos[0] +')'}"
-            ></div>
-
-            <!-- Título com link para os detalhes da festa -->
-            <router-link
-              :to="`/party/${party._id}`"
-              class="party-title"
-            >
-              {{ party.title }}
-            </router-link>
-
-            <!-- Data da festa -->
+        <div v-for="(party, index) in parties" :key="index" class="party-container">
+            <div class="party-img" :style="{'background-image': 'url(' + party.photos[0] +')'}"></div>
+            <router-link :to="`/party/${party._id}`" class="party-title">{{ party.title }}</router-link>
             <p class="party-date">Data: {{ party.partyDate }}</p>
-
-            <!-- Botão para acessar os detalhes -->
-            <router-link
-              :to="`/party/${party._id}`"
-              class="party-details-btn"
-            >
-              Ver Mais
-            </router-link>
+            <router-link :to="`/party/${party._id}`" class="party-details-btn">Ver Mais</router-link>
         </div>        
     </div>
-
-    <!-- Mensagem exibida quando não há festas -->
     <p v-if="parties.length == 0">Não há festas ainda...</p>
   </div>
 </template>
-
 <script>
+
 export default {
     data() {
         return {
-            parties: [] // Lista de festas públicas
+            parties: []
         }
     },
     created() {
-        // Carrega as festas públicas ao iniciar o componente
+        // load public parties
         this.getParties();
     },
     methods: {
-        // Busca todas as festas públicas no backend
         async getParties() {
 
             await fetch(`http://localhost:3000/api/party/all`, {
@@ -66,40 +36,31 @@ export default {
             .then((resp) => resp.json())
             .then((data) => {
 
-                // Ajusta os dados recebidos do backend
-                data.parties.forEach((party) => {
+                data.parties.forEach((party, index) => {
 
-                    // Formata a data para o padrão local
                     if(party.partyDate) {
-                        party.partyDate =
-                          new Date(party.partyDate).toLocaleDateString();
+                        party.partyDate = new Date(party.partyDate).toLocaleDateString();
                     }
 
-                    // Ajusta o caminho das imagens para URL completa
                     party.photos.forEach((photo, index) => {
-                        party.photos[index] =
-                          photo
-                            .replace("public", "http://localhost:3000")
-                            .replaceAll("\\", "/");
+                        party.photos[index] = photo.replace("public", "http://localhost:3000").replaceAll("\\", "/");
                     });
 
                 });
 
-                // Atualiza a lista de festas
                 this.parties = data.parties;
 
             })
             .catch((err) => {
                 console.log(err);
             })
+
         }
     }
 }
 </script>
-
 <style scoped>
 
-    /* Container principal */
     .home {
         text-align: center;
         padding-top: 40px;
@@ -110,7 +71,6 @@ export default {
         margin-bottom: 40px;
     }
 
-    /* Container das festas */
     .parties-container {
         display: flex;
         flex-wrap: wrap;
@@ -118,7 +78,6 @@ export default {
         margin: 0 auto;
     }
 
-    /* Card individual da festa */
     .party-container {
         width: 30.3%;
         margin: 1.5%;
@@ -126,7 +85,6 @@ export default {
         flex-direction: column;
     }
 
-    /* Imagem da festa */
     .party-img {
         width: 100%;
         height: 200px;
@@ -135,20 +93,17 @@ export default {
         background-size: cover;
     }
 
-    /* Título da festa */
     .party-title {
         color: #25282e;
         text-decoration: none;
         margin-bottom: 12px;
     }
 
-    /* Data da festa */
     .party-date {
         color: #777;
         margin-bottom: 12px;
     }
 
-    /* Botão de detalhes */
     .party-details-btn {
         width: 100%;
         text-transform: uppercase;
@@ -163,6 +118,22 @@ export default {
 
     .party-details-btn:hover {
         background-color: #141619;
+    }
+    
+    #party-1 {
+        background-image: url('../../public/img/party1.jpg');
+    }
+
+    #party-2 {
+        background-image: url('../../public/img/party2.jpg');
+    }
+
+    #party-3 {
+        background-image: url('../../public/img/party3.jpg');
+    }
+
+    #party-4 {
+        background-image: url('../../public/img/party4.jpg');
     }
 
 </style>

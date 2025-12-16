@@ -1,5 +1,4 @@
 <template>
-  <!-- Rodapé da aplicação -->
   <footer>
     <h3>Party Time &copy; 2021</h3>
     <p>O melhor local para compartilhar seus eventos!</p>
@@ -8,13 +7,11 @@
 
 <script>
 export default {
-  // Componente responsável pelo rodapé da aplicação
   name: "Footer"
 }
 </script>
 
 <style scoped>
-  /* Estilização do rodapé */
   footer {
     background-color: #25282e;
     height: 300px;
@@ -24,7 +21,6 @@ export default {
     flex-direction: column;
   }
 
-  /* Título do rodapé */
   footer h3 {
     color: #FFF;
     margin-bottom: 15px;
@@ -32,8 +28,8 @@ export default {
     font-size: 1.6rem;
   }
 
-  /* Texto descritivo */
   footer p {
     color: #c1b696;
   }
+
 </style>

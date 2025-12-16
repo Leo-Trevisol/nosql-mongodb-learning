@@ -1,33 +1,16 @@
 <template>
   <div class="party">
-    <!-- Título do evento -->
     <h1>{{ party.title }}</h1>
-
     <div class="party-container">
-      <!-- Área de imagens da festa -->
       <div class="party-images" v-if="party.photos">
-        <!-- Imagem principal -->
-        <div
-          class="main-image"
-          :style="{'background-image': 'url(' + party.photos[0] +')'}"
-        ></div>
-
-        <!-- Miniaturas das demais imagens -->
+        <div class="main-image" :style="{'background-image': 'url(' + party.photos[0] +')'}"></div>
         <div class="party-mini-images" v-if="party.photos[1]">
-          <div
-            class="mini-image"
-            v-for="(photo, index) in party.photos"
-            :key="index"
-            :style="{'background-image': 'url(' + party.photos[index] +')'}"
-          ></div>
+          <div class="mini-image" v-for="(photo, index) in party.photos" :key="index" :style="{'background-image': 'url(' + party.photos[index] +')'}"></div>
         </div>
       </div>
-
-      <!-- Detalhes do evento -->
       <div class="party-details">
         <p class="bold">Descrição da festa:</p>
         <p class="party-description">{{ party.description }}</p>
-
         <p class="bold">Data da festa:</p>
         <p class="party-date">{{ party.partyDate }}</p>        
       </div>
@@ -37,24 +20,22 @@
 
 <script>
 export default {
-    name: "Party",
+    components: {
+    },
     data() {
         return {
-          // Objeto da festa carregado da API
           party: {},
         }
     },
     created() {
-        // Carrega os dados da festa ao entrar na página
+        // load party
         this.getParty();
     },
     methods: {
         async getParty() {
 
-            // Obtém o ID da festa pela URL
+            // get id from url and token from state
             const id = this.$route.params.id;
-
-            // Token armazenado no Vuex (se existir)
             const token = this.$store.getters.token;
 
             await fetch(`http://localhost:3000/api/party/${id}`, {
@@ -67,18 +48,16 @@ export default {
             .then((resp) => resp.json())
             .then((data) => {
 
-                // Armazena os dados da festa
                 this.party = data.party;
 
-                // Formata a data para o padrão local
                 this.party.partyDate = new Date(this.party.partyDate).toLocaleDateString();
 
-                // Ajusta o caminho das imagens para acesso público
                 this.party.photos.forEach((photo, index) => {
-                  this.party.photos[index] = photo
-                    .replace("public", "http://localhost:3000")
-                    .replaceAll("\\", "/");
+                  this.party.photos[index] = photo.replace("public", "http://localhost:3000").replaceAll("\\", "/");
                 });
+
+                console.log(this.party);
+                console.log(this.party.photos);
 
             })
             .catch((err) => {
@@ -91,7 +70,6 @@ export default {
 </script>
 
 <style scoped>
-    /* Container principal da página */
     .party {
         text-align: center;
         padding-top: 40px;
@@ -104,18 +82,15 @@ export default {
         margin-bottom: 40px;
     }
 
-    /* Layout principal */
     .party-container {
       display: flex;
     }
 
-    /* Área de imagens */
     .party-images {
       width: 380px;
       margin-right: 30px;
     }
 
-    /* Imagem principal */
     .main-image {
       width: 100%;
       height: 200px;
@@ -125,7 +100,6 @@ export default {
       background-size: cover;
     }
 
-    /* Miniaturas */
     .party-mini-images {
       display: flex;
       flex-wrap: wrap;
@@ -141,7 +115,6 @@ export default {
       background-size: cover;
     }
 
-    /* Área de detalhes */
     .party-details {
       display: flex;
       flex-direction: column;
@@ -153,8 +126,7 @@ export default {
       margin-bottom: 12px;
     }
 
-    .party-description,
-    .party-date {
+    .party-description, .party-date {
       margin-bottom: 20px;
     }
 </style>

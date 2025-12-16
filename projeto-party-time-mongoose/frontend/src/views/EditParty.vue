@@ -1,15 +1,7 @@
 <template>
   <div class="editparty">
-    <!-- Título da página -->
     <h1>Edite a sua festa:</h1>
-
-    <!-- Formulário reutilizado para edição da festa -->
-    <PartyForm
-      :party="party"
-      page="editparty"
-      btnText="Editar Festa"
-      :key="componentKey"
-    />
+    <PartyForm :party="party" page="editparty" btnText="Editar Festa" :key="componentKey"  />
   </div>
 </template>
 
@@ -22,19 +14,18 @@ export default {
     },
     data() {
         return {
-            party: {},           // Dados da festa carregada
-            componentKey: 0      // Força a recriação do componente PartyForm
+            party: {},
+            componentKey: 0
         }
     },
     created() {
-        // Carrega os dados da festa ao criar o componente
+        // load party
         this.getParty();
     },
     methods: {
-        // Busca os dados da festa do usuário pelo ID
         async getParty() {
 
-            // Recupera o ID da URL e o token do Vuex
+            // get id from url and token from state
             const id = this.$route.params.id;
             const token = this.$store.getters.token;
 
@@ -48,25 +39,21 @@ export default {
             .then((resp) => resp.json())
             .then((data) => {
 
-                // Atribui os dados da festa
                 this.party = data.party;
 
-                // Ajusta o formato da data para input type="date"
                 this.party.partyDate = this.party.partyDate.substring(0, 10)
 
-                // Ajusta o caminho das imagens para URL completa
                 this.party.photos.forEach((photo, index) => {
-                    this.party.photos[index] =
-                        photo.replace("public", "http://localhost:3000");
+                    this.party.photos[index] = photo.replace("public", "http://localhost:3000");
                 });
 
-                // Força a atualização do PartyForm
                 this.componentKey += 1;
 
             })
             .catch((err) => {
                 console.log(err);
             })
+
         }
     }
 }
@@ -79,7 +66,6 @@ export default {
         padding-bottom: 100px;
     }
 
-    /* Espaçamento do título */
     .editparty h1 {
         margin-bottom: 40px;
     }
