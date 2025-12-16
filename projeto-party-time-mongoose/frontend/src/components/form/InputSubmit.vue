@@ -1,23 +1,22 @@
 <template>
-    <!-- Botão reutilizável de submit com texto dinâmico -->
+    <!-- Botão reutilizável de submit -->
     <input type="submit" :value="text">
 </template>
 
 <script>
 export default {
-    // Nome do componente para debug e reutilização
+    // Componente simples para padronizar botões de submit
     name: "InputSubmit",
 
-    // Propriedades recebidas do componente pai
+    // Texto exibido no botão
     props: {
-        // Texto exibido no botão
         text: ""
     }
 }
 </script>
 
 <style scoped>
-    /* Estilo exclusivo do botão de submit */
+    /* Estilo padrão do botão de submit */
     input[type='submit'] {
         width: 200px;
         margin: 0 auto;

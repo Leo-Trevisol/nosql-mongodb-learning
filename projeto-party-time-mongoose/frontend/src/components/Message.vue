@@ -1,23 +1,22 @@
 <template>
-  <!-- Exibe mensagem somente quando existir conteúdo -->
-  <p class="msg" :class="msgClass" v-if="msg">
+  <!-- Exibe a mensagem apenas se existir conteúdo -->
+  <p
+    class="msg"
+    :class="msgClass"
+    v-if="msg"
+  >
     {{ msg }}
   </p>
 </template>
 
 <script>
 export default {
-  // Componente genérico para feedback visual (erro/sucesso)
+  // Componente reutilizável para exibição de mensagens
+  // Pode ser usado para sucesso, erro ou avisos
   name: "Message",
 
-  // Props controladas pelo componente pai
-  props: [
-    // Texto da mensagem
-    "msg",
-
-    // Classe CSS que define o tipo da mensagem (error | success)
-    "msgClass"
-  ]
+  // Props recebidas do componente pai
+  props: ["msg", "msgClass"]
 }
 </script>
 

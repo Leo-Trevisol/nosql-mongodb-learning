@@ -1,8 +1,8 @@
 <template>
   <!-- Barra de navegação principal -->
   <div id="nav">
-
-    <!-- Logo que redireciona para a Home -->
+    
+    <!-- Logo que redireciona para a página inicial -->
     <router-link to="/" id="logo-container">
       <img src="/img/partytimelogo.png" alt="Party Time">
     </router-link>    
@@ -12,7 +12,6 @@
 
     <!-- Links de navegação -->
     <div id="nav-links">
-      <!-- Link público -->
       <router-link to="/">Festas</router-link>
 
       <!-- Links visíveis apenas quando NÃO autenticado -->
@@ -23,11 +22,8 @@
       <router-link to="/dashboard" v-show="authenticated">Dashboard</router-link>
       <router-link to="/profile" v-show="authenticated">Configurações</router-link>
 
-      <!-- Botão de logout (somente autenticado) -->
-      <button
-        @click="logout($event)"
-        v-show="authenticated"
-      >
+      <!-- Botão de logout -->
+      <button @click="logout($event)" v-show="authenticated">
         Logout
       </button>
     </div>
@@ -41,23 +37,28 @@ export default {
   // Componente responsável pela navegação do sistema
   name: "Navbar",
 
+  data () {
+    return {
+      // Nenhum estado local necessário
+    }
+  },
+
   methods: {
-    // Realiza logout do usuário
+    // Realiza o logout do usuário
     logout(e) {
       e.preventDefault();
 
-      // Limpa dados de autenticação do Vuex
+      // Remove autenticação do Vuex
       this.$store.commit("logout");
 
-      // Redireciona para a Home
+      // Redireciona para a home
       this.$router.push("/");
     }
   },
 
   computed: {
-    // Mapeia estados do Vuex para uso no template
+    // Estado global que indica se o usuário está autenticado
     ...mapState([
-      // Indica se o usuário está autenticado
       'authenticated',
     ])
   }
@@ -97,7 +98,7 @@ export default {
     width: 400px;
   }
 
-  /* Área dos links */
+  /* Alinhamento dos links */
   #nav-links {
     display: flex;
     justify-content: flex-end;

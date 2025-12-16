@@ -1,21 +1,21 @@
 <template>
   <div>
-    <!-- Componente de mensagem para feedback visual -->
+    <!-- Exibe mensagens de erro ou sucesso -->
     <Message :msg="msg" :msgClass="msgClass" />
 
     <!-- 
-      Formulário reutilizável:
-      - page === 'register' → cadastro
-      - caso contrário → edição de perfil
+      Formulário de usuário
+      - register → cadastro
+      - outro valor → atualização de perfil
     -->
     <form
       id="user-form"
       @submit="page === 'register' ? register($event) : update($event)"
     >
-      <!-- ID do usuário (usado apenas na edição) -->
+      <!-- ID oculto usado na edição -->
       <input type="hidden" id="id" name="id" v-model="id">
 
-      <!-- Nome -->
+      <!-- Nome do usuário -->
       <div class="input-container">
         <label for="name">Nome:</label>
         <input
@@ -27,7 +27,7 @@
         >
       </div>
 
-      <!-- Email -->
+      <!-- Email do usuário -->
       <div class="input-container">
         <label for="email">Email:</label>
         <input
@@ -51,7 +51,7 @@
         >
       </div>
 
-      <!-- Confirmação de senha -->
+      <!-- Confirmação da senha -->
       <div class="input-container">
         <label for="confirmpassword">Confirmação:</label>
         <input
@@ -74,7 +74,7 @@ import InputSubmit from './form/InputSubmit'
 import Message from './Message';
 
 export default {
-  // Formulário reutilizável para cadastro e edição de usuário
+  // Componente responsável por cadastro e edição de usuário
   name: "RegisterForm",
 
   components: {
@@ -82,17 +82,17 @@ export default {
     Message
   },
 
-  // Props recebidas do componente pai
+  // Dados recebidos do componente pai
   props: ["user", "page", "btnText"],
 
   data() {
     return {
-      // Dados do usuário (preenchidos na edição)
+      // Dados do usuário
       id: this.user._id || null,
       name: this.user.name || null,
       email: this.user.email || null,
 
-      // Senhas não vêm do backend
+      // Senhas não vêm preenchidas por segurança
       password: null,
       confirmpassword: null,
 
@@ -114,29 +114,24 @@ export default {
         confirmpassword: this.confirmpassword
       }
 
-      const jsonData = JSON.stringify(data);
-
       await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: { "Content-type": "application/json" },
-        body: jsonData
+        body: JSON.stringify(data)
       })
         .then((resp) => resp.json())
         .then((data) => {
-
           let auth = false;
 
-          // Caso ocorra erro no cadastro
           if (data.error) {
             this.msg = data.error;
             this.msgClass = "error";
           } else {
-            // Cadastro realizado com sucesso
             auth = true;
             this.msg = data.msg;
             this.msgClass = "success";
 
-            // Autentica o usuário no Vuex
+            // Salva token e id no Vuex
             this.$store.commit("authenticate", {
               token: data.token,
               userId: data.userId
@@ -145,20 +140,17 @@ export default {
 
           setTimeout(() => {
             if (!auth) {
-              // Limpa mensagem de erro
               this.msg = null;
             } else {
-              // Redireciona para o dashboard
+              // Redireciona após cadastro
               this.$router.push('dashboard');
             }
           }, 2000);
         })
-        .catch((err) => {
-          console.log(err);
-        })
+        .catch((err) => console.log(err));
     },
 
-    // Atualização de dados do usuário
+    // Atualização dos dados do usuário
     async update(e) {
       e.preventDefault();
 
@@ -170,9 +162,7 @@ export default {
         confirmpassword: this.confirmpassword
       }
 
-      const jsonData = JSON.stringify(data);
-
-      // Token de autenticação armazenado no Vuex
+      // Token de autenticação
       const token = this.$store.getters.token;
 
       await fetch("http://localhost:3000/api/user", {
@@ -181,23 +171,16 @@ export default {
           "Content-type": "application/json",
           "auth-token": token
         },
-        body: jsonData
+        body: JSON.stringify(data)
       })
         .then((resp) => resp.json())
         .then((data) => {
-          if (data.error) {
-            this.msg = data.error;
-            this.msgClass = "error";
-          } else {
-            this.msg = data.msg;
-            this.msgClass = "success";
-          }
+          this.msg = data.error || data.msg;
+          this.msgClass = data.error ? "error" : "success";
         })
-        .catch((err) => {
-          console.log(err);
-        })
+        .catch((err) => console.log(err));
 
-      // Limpa a mensagem após alguns segundos
+      // Limpa mensagem após alguns segundos
       setTimeout(() => {
         this.msg = null;
       }, 2000);

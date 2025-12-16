@@ -1,7 +1,6 @@
 <template>
   <div class="data-container">
-
-      <!-- Componente para exibir mensagens de sucesso/erro -->
+      <!-- Exibe mensagens de sucesso ou erro -->
       <Message :msg="msg" :msgClass="msgClass" />
 
       <!-- Cabeçalho da tabela -->
@@ -13,29 +12,34 @@
 
       <!-- Corpo da tabela -->
       <div class="data-table-body">
-        
-        <!-- Linha gerada para cada festa -->
         <div class="data-row" v-for="(party, index) in parties" :key="party._id">
+            <!-- Índice da festa -->
             <div class="data-id-container">{{ index + 1 }}</div>
 
-            <!-- Link para a página pública da festa -->
+            <!-- Link para visualização da festa -->
             <div class="data-title-container">
                 <router-link :to="`/party/${party._id}`">
-                  {{ party.title }}
+                    {{ party.title }}
                 </router-link>
             </div>
 
-            <!-- Ações disponíveis para o usuário -->
+            <!-- Ações disponíveis -->
             <div class="data-actions-container">
-                <router-link :to="`/editparty/${party._id}`" class="edit-btn">
+                <router-link
+                  :to="`/editparty/${party._id}`"
+                  class="edit-btn"
+                >
                   Editar
                 </router-link>
-                <button class="remove-btn" @click="remove(party._id)">
+
+                <button
+                  class="remove-btn"
+                  @click="remove(party._id)"
+                >
                   Remover
                 </button>
             </div>
         </div>
-
       </div>
   </div>
 </template>
@@ -44,8 +48,8 @@
 import Message from './Message';
 
 export default {
-  // Componente responsável por listar e gerenciar festas do usuário
-  name: "DataTable",
+  // Componente responsável por listar festas em formato de tabela
+  name: "Footer",
 
   // Lista de festas recebida do componente pai
   props: ["parties"],
@@ -56,20 +60,19 @@ export default {
 
   data() {
       return {
-        // Mensagem de feedback (sucesso ou erro)
-        msg: null,
-        msgClass: null,
+        msg: null,       // Mensagem exibida ao usuário
+        msgClass: null, // Classe CSS da mensagem (success | error)
       }
   },
 
   methods: {
     async remove(id) {
 
-        // Recupera token e usuário autenticado do Vuex
+        // Obtém usuário e token do Vuex
         const userId = this.$store.getters.userId;
         const token = this.$store.getters.token;
 
-        // Dados enviados para exclusão da festa
+        // Dados enviados para remoção da festa
         const data = {
             id: id,
             userId: userId
@@ -89,7 +92,7 @@ export default {
         .then((resp) => resp.json())
         .then((data) => {
 
-            // Exibe feedback ao usuário
+            // Define mensagem de retorno
             if(data.error) {
                 this.msg = data.error;
                 this.msgClass = "error";
@@ -98,9 +101,10 @@ export default {
                 this.msgClass = "success";
             }
 
-            // Limpa mensagem e recarrega lista
             setTimeout(() => {
-                this.msg = null;  
+                this.msg = null;
+
+                // Atualiza a lista de festas
                 this.$parent.getParties();
             }, 1000);
 
@@ -108,31 +112,35 @@ export default {
         .catch((err) => {
             console.log(err);
         })
-        
     }
   }
 }
 </script>
 
 <style scoped>
-    /* Estrutura base da tabela */
-    .data-table-heading, .data-row {
+    /* Layout da tabela */
+    .data-table-heading,
+    .data-row {
         display: flex;
         align-items: center;
         height: 50px;
         border-bottom: 1px solid #CCC;
     }
 
-    .data-table-heading div, .data-row div {
+    .data-table-heading div,
+    .data-row div {
         flex: 1 1 0;
     } 
 
-    .data-id-heading, .data-id-container {
+    /* Coluna de índice */
+    .data-id-heading,
+    .data-id-container {
         max-width: 50px
     }
 
     /* Botões de ação */
-    .edit-btn, .remove-btn {
+    .edit-btn,
+    .remove-btn {
         padding: 10px 16px;
         background-color: #000;
         color: #FFF;
@@ -144,6 +152,7 @@ export default {
         transition: .5s;
     }
 
+    /* Botão editar */
     .edit-btn {
         background-color: #007bff;
     }
@@ -152,6 +161,7 @@ export default {
         background-color: #0069d9;
     }
 
+    /* Botão remover */
     .remove-btn {
         background-color: #dc3545;
     }

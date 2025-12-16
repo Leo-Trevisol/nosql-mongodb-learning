@@ -5,19 +5,19 @@
 
     <!-- 
       Formulário de criação ou edição de festa
-      - Se page === 'newparty' → cria festa
-      - Caso contrário → atualiza festa
+      - newparty → cria
+      - editparty → atualiza
     -->
     <form
       id="register-form"
       enctype="multipart/form-data"
       @submit="page === 'newparty' ? createParty($event) : update($event)"
     >
-      <!-- Campos ocultos para edição -->
+      <!-- Campos ocultos usados na edição -->
       <input type="hidden" id="id" name="id" v-model="id">
       <input type="hidden" id="user_id" name="user_id" v-model="user_id">
 
-      <!-- Título -->
+      <!-- Título do evento -->
       <div class="input-container">
         <label for="title">Título do Evento:</label>
         <input
@@ -29,7 +29,7 @@
         >
       </div>
 
-      <!-- Descrição -->
+      <!-- Descrição do evento -->
       <div class="input-container">
         <label for="description">Descrição:</label>
         <textarea
@@ -40,7 +40,7 @@
         ></textarea>
       </div>
 
-      <!-- Data do evento -->
+      <!-- Data da festa -->
       <div class="input-container">
         <label for="party_date">Data da Festa:</label>
         <input
@@ -64,7 +64,7 @@
         >
       </div>
 
-      <!-- Miniaturas das imagens existentes (apenas na edição) -->
+      <!-- Miniaturas das imagens atuais (somente edição) -->
       <div
         v-if="page === 'editparty' && showMiniImages"
         class="mini-images"
@@ -72,12 +72,12 @@
         <p>Imagens atuais:</p>
         <img
           v-for="(photo, index) in photos"
-          :src="`${photo}`"
+          :src="photo"
           :key="index"
         >
       </div>
 
-      <!-- Privacidade do evento -->
+      <!-- Definição de privacidade -->
       <div class="input-container checkbox-container">
         <label for="privacy">Evento privado</label>
         <input
@@ -112,7 +112,7 @@ export default {
 
   data() {
     return {
-      // Dados da festa (edição ou novo registro)
+      // Dados da festa
       id: this.party._id || null,
       title: this.party.title || null,
       description: this.party.description || null,
@@ -125,13 +125,13 @@ export default {
       msg: null,
       msgClass: null,
 
-      // Controle de exibição das miniaturas
+      // Controle das miniaturas na edição
       showMiniImages: true,
     }
   },
 
   methods: {
-    // Criação de uma nova festa
+    // Criação de nova festa
     async createParty(e) {
       e.preventDefault();
 
@@ -143,7 +143,7 @@ export default {
       formData.append('party_date', this.party_date);
       formData.append('privacy', this.privacy);
 
-      // Upload de imagens
+      // Upload das imagens
       if (this.photos.length > 0) {
         for (const i of Object.keys(this.photos)) {
           formData.append('photos', this.photos[i])
@@ -162,13 +162,8 @@ export default {
       })
         .then((resp) => resp.json())
         .then((data) => {
-          if (data.error) {
-            this.msg = data.error;
-            this.msgClass = "error";
-          } else {
-            this.msg = data.msg;
-            this.msgClass = "success";
-          }
+          this.msg = data.error || data.msg;
+          this.msgClass = data.error ? "error" : "success";
 
           setTimeout(() => {
             this.msg = null;
@@ -179,18 +174,16 @@ export default {
             }
           }, 2000);
         })
-        .catch((err) => {
-          console.log(err);
-        })
+        .catch((err) => console.log(err));
     },
 
-    // Captura alteração no input de imagens
+    // Captura arquivos selecionados
     onChange(e) {
       this.photos = e.target.files;
       this.showMiniImages = false;
     },
 
-    // Atualização de uma festa existente
+    // Atualização de festa existente
     async update(e) {
       e.preventDefault();
 
@@ -223,17 +216,10 @@ export default {
       })
         .then((resp) => resp.json())
         .then((data) => {
-          if (data.error) {
-            this.msg = data.error;
-            this.msgClass = "error";
-          } else {
-            this.msg = data.msg;
-            this.msgClass = "success";
-          }
+          this.msg = data.error || data.msg;
+          this.msgClass = data.error ? "error" : "success";
         })
-        .catch((err) => {
-          console.log(err);
-        })
+        .catch((err) => console.log(err));
 
       // Limpa mensagem após alguns segundos
       setTimeout(() => {

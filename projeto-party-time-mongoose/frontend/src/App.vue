@@ -1,12 +1,12 @@
 <template>
   <div>
-    <!-- Barra de navegação fixa no topo -->
+    <!-- Barra de navegação principal -->
     <Navbar />
 
-    <!-- Componente global para exibição de mensagens (feedbacks/alerts) -->
+    <!-- Componente genérico para exibir mensagens globais -->
     <Message />
 
-    <!-- Área onde as rotas são renderizadas -->
+    <!-- Área onde as rotas (views) são renderizadas -->
     <router-view class="container" />
 
     <!-- Rodapé da aplicação -->
@@ -15,13 +15,12 @@
 </template>
 
 <script>
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Message from './components/Message';
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
+import Message from './components/Message'
 
 export default {
   name: "App",
-  // Registro dos componentes globais utilizados no layout principal
   components: {
     Navbar,
     Footer,
@@ -31,7 +30,7 @@ export default {
 </script>
 
 <style>
-  /* Reset básico e estilo global da aplicação */
+  /* Reset básico e fonte padrão da aplicação */
   * {
     margin: 0;
     padding: 0;
@@ -40,12 +39,12 @@ export default {
     color: #444;
   }
 
-  /* Container principal onde as views são exibidas */
+  /* Container principal das páginas */
   .container {
     min-height: 300px;
   }
 
-  /* Efeito visual padrão para links */
+  /* Estilo base para links */
   a {
     transition: .5s;
   }

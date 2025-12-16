@@ -3,8 +3,7 @@
     <!-- Título da página -->
     <h1>Edite seu perfil</h1>
 
-    <!-- Formulário reutilizável para edição de usuário -->
-    <!-- key força o re-render quando os dados do usuário são carregados -->
+    <!-- Formulário de edição do usuário -->
     <UserForm
       page="profile"
       :user="user"
@@ -18,31 +17,29 @@
 import UserForm from '../components/UserForm'
 
 export default {
+    name: "Profile",
     components: {
         UserForm
     },
-
     data() {
         return {
-            // Dados do usuário autenticado
+            // Dados do usuário carregados da API
             user: {},
 
-            // Usado para forçar a atualização do componente UserForm
+            // Força o recarregamento do componente UserForm
             componentKey: 0
         }
     },
-
     created() {
-        // Carrega os dados do usuário ao entrar na página
-        this.getUser()
+        // Carrega os dados do usuário ao abrir a página
+        this.getUser();
     },
-
     methods: {
         async getUser() {
 
-            // ID e token obtidos do Vuex (estado global)
-            const id = this.$store.getters.userId
-            const token = this.$store.getters.token
+            // Obtém o ID do usuário e o token armazenados no Vuex
+            const id = this.$store.getters.userId;
+            const token = this.$store.getters.token;
 
             await fetch(`http://localhost:3000/api/user/${id}`, {
                 method: "GET",
@@ -51,31 +48,34 @@ export default {
                     "auth-token": token 
                 }
             })
-            .then(resp => resp.json())
-            .then(data => {
+            .then((resp) => resp.json())
+            .then((data) => {
 
-                // Dados retornados da API
-                this.user = data.user
+                // Atualiza os dados do usuário
+                this.user = data.user;
 
-                // Força a re-renderização do formulário com os dados carregados
-                this.componentKey += 1
+                // Atualiza a key para garantir re-render do formulário
+                this.componentKey += 1;
+
             })
-            .catch(err => {
-                console.log(err)
+            .catch((err) => {
+                console.log(err);
             })
+
         }
     }
 }
 </script>
 
 <style scoped>
-.profile {
-    text-align: center;
-    padding-top: 40px;
-    padding-bottom: 100px;
-}
+    /* Container principal da página */
+    .profile {
+        text-align: center;
+        padding-top: 40px;
+        padding-bottom: 100px;
+    }
 
-.profile h1 {
-    margin-bottom: 40px;
-}
+    .profile h1 {
+        margin-bottom: 40px;
+    }
 </style>

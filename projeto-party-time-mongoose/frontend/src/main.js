@@ -3,11 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store/index'
 
-// Cria a aplicação Vue a partir do componente raiz (App.vue)
-// e registra o sistema de rotas
-const app = createApp(App).use(router)
+// Cria a instância principal da aplicação Vue
+const app = createApp(App)
+  // Registra o Vue Router (rotas da aplicação)
+  .use(router)
 
-// Registra o Vuex (store global de estado)
+// Registra o Vuex (estado global)
 app.use(store)
 
 // Monta a aplicação no elemento #app do index.html

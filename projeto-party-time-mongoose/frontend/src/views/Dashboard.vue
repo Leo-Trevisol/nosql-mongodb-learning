@@ -1,14 +1,12 @@
 <template>
   <div class="dashboard">
+    <!-- Título da página e botão para criar nova festa -->
     <div class="title-container">
-        <!-- Título da área do usuário -->
         <h1>Gerencie seus eventos</h1>
-
-        <!-- Navegação para cadastro de uma nova festa -->
         <router-link to="/newparty" class="btn">Cadastrar Festa</router-link>
     </div>
 
-    <!-- Exibe a tabela se o usuário tiver festas cadastradas -->
+    <!-- Exibe a tabela caso existam festas cadastradas -->
     <div v-if="parties.length > 0">
         <DataTable :parties="parties" />
     </div>
@@ -32,17 +30,16 @@ export default {
     },
     data() {
         return {
-            // Lista de festas do usuário logado
-            parties: []
+            parties: [] // Lista de festas do usuário
         }
     },
     methods: {
+        // Busca as festas cadastradas pelo usuário logado
         async getParties() {
 
-            // Recupera o token JWT armazenado no Vuex
+            // Recupera o token do Vuex
             const token = this.$store.getters.token;
 
-            // Requisição para buscar as festas do usuário autenticado
             await fetch("http://localhost:3000/api/party/userparties", {
                 method: "GET",
                 headers: { 
@@ -52,29 +49,28 @@ export default {
             })
             .then((resp) => resp.json())
             .then((data) => {
-                // Atualiza o estado com as festas retornadas pela API
+                // Atualiza a lista de festas
                 this.parties = data.parties;
             })
             .catch((err) => {
                 console.log(err);
             })
-        
         }
     },
     created() {
-        // Carrega as festas assim que a view é criada
+        // Carrega as festas ao criar o componente
         this.getParties();
     },
 }
 </script>
 
 <style scoped>
-    /* Estilização específica da dashboard */
     .dashboard {
         padding: 50px;
         padding-bottom: 100px;
     }
 
+    /* Container do título e botão */
     .title-container {
         display: flex;        
         align-items: center;
@@ -82,7 +78,7 @@ export default {
         margin-bottom: 40px;
     }
     
-    /* Botão padrão de ação */
+    /* Estilo do botão */
     .btn {
         padding: 10px 16px;
         background-color: #000;

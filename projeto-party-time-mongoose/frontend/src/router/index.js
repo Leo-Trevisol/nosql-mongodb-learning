@@ -1,26 +1,22 @@
-// Importa as funções principais do Vue Router
 import { createRouter, createWebHistory } from 'vue-router'
-
-// Importa a Home diretamente (rota principal)
 import Home from '../views/Home.vue'
-
-// Importa a store do Vuex para verificar autenticação
 import store from '../store/index'
 
 // Definição das rotas da aplicação
 const routes = [
   {
-    path: '/',                     // URL raiz
-    name: 'Home',                  // Nome da rota
-    component: Home,               // Componente associado
+    path: '/',
+    name: 'Home',
+    component: Home,
     meta: {
-      requiresAuth: false          // Não exige autenticação
+      // Página pública
+      requiresAuth: false
     }
   },
   {
     path: '/login',
     name: 'Login',
-    // Lazy loading para melhorar performance
+    // Lazy loading da view de login
     component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
     meta: {
       requiresAuth: false
@@ -29,6 +25,7 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
+    // Lazy loading da view de cadastro
     component: () => import(/* webpackChunkName: "register" */ '../views/Register.vue'),
     meta: {
       requiresAuth: false
@@ -37,14 +34,16 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile',
+    // Página protegida (usuário logado)
     component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue'),
     meta: {
-      requiresAuth: true           // Rota protegida
+      requiresAuth: true
     }
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
+    // Dashboard do usuário autenticado
     component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
     meta: {
       requiresAuth: true
@@ -53,22 +52,25 @@ const routes = [
   {
     path: '/newparty',
     name: 'NewParty',
+    // Criação de nova festa
     component: () => import(/* webpackChunkName: "newparty" */ '../views/NewParty.vue'),
     meta: {
       requiresAuth: true
     }
   },
   {
-    path: '/editparty/:id',        // Parâmetro dinâmico (id da festa)
+    path: '/editparty/:id',
     name: 'Edit Party',
+    // Edição de festa existente (recebe ID por parâmetro)
     component: () => import(/* webpackChunkName: "editparty" */ '../views/EditParty.vue'),
     meta: {
       requiresAuth: true
     }
   },
   {
-    path: '/party/:id',            // Página pública de visualização da festa
+    path: '/party/:id',
     name: 'Party',
+    // Visualização pública da festa
     component: () => import(/* webpackChunkName: "party" */ '../views/Party.vue'),
     meta: {
       requiresAuth: false
@@ -76,38 +78,31 @@ const routes = [
   }
 ]
 
-// Criação do router com histórico baseado em URL (sem #)
+// Criação do router com histórico HTML5
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
-})
+});
 
-// Navigation Guard global
-// Executado antes de cada mudança de rota
+// Guarda de navegação global
+// Verifica se a rota exige autenticação
 router.beforeEach((to, from, next) => {
-
-  // Verifica se a rota acessada exige autenticação
   if (to.matched.some(record => record.meta.requiresAuth)) {
-
-    // Se o usuário NÃO estiver autenticado
+    // Usuário não autenticado
     if (store.getters.authenticated === false) {
-
-      // Redireciona para a página de login
       next({
         path: '/login',
-        params: { nextUrl: to.fullPath } // Guarda a rota original
+        // Guarda a rota original para possível redirecionamento
+        params: { nextUrl: to.fullPath }
       })
-
     } else {
-      // Usuário autenticado → acesso permitido
+      // Usuário autenticado
       next()
     }
-
   } else {
-    // Rota pública → acesso liberado
+    // Rota pública
     next()
   }
 })
 
-// Exporta o router para uso na aplicação
 export default router

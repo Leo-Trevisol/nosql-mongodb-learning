@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- Componente de mensagens de sucesso/erro -->
+        <!-- Componente de mensagem para feedback de erro ou sucesso -->
         <Message :msg="msg" :msgClass="msgClass" />
 
         <!-- Formulário de login -->
@@ -27,7 +27,7 @@
                 >
             </div>
 
-            <!-- Botão reutilizável de submit -->
+            <!-- Botão de envio reutilizável -->
             <InputSubmit text="Entrar" />
         </form>
     </div>
@@ -38,14 +38,17 @@ import InputSubmit from './form/InputSubmit'
 import Message from './Message'
 
 export default {
+  // Componente responsável pelo login do usuário
   name: "LoginForm",
+
   components: {
       InputSubmit,
       Message
   },
+
   data() {
       return {
-        // Dados do formulário
+        // Credenciais do usuário
         email: null,
         password: null,
 
@@ -54,12 +57,13 @@ export default {
         msgClass: null,
       }
   },
+
   methods: {
+    // Realiza a autenticação do usuário
     async login(e) {
-        // Impede o reload da página
         e.preventDefault();
 
-        // Monta o payload para a API
+        // Dados enviados para a API
         const data = {
             email: this.email,
             password: this.password
@@ -67,7 +71,6 @@ export default {
 
         const jsonData = JSON.stringify(data);
 
-        // Requisição de login para o backend
         await fetch("http://localhost:3000/api/auth/login", {
             method: "POST",
             headers: { "Content-type": "application/json" },
@@ -78,8 +81,8 @@ export default {
 
             let auth = false;
 
-            // Caso ocorra erro no login
             if(data.error) {
+                // Erro na autenticação
                 this.msg = data.error;
                 this.msgClass = "error";
             } else {
@@ -88,7 +91,7 @@ export default {
                 this.msg = data.msg;
                 this.msgClass = "success";
 
-                // Salva token e userId no Vuex (autenticação)
+                // Salva token e usuário no Vuex
                 this.$store.commit("authenticate", {
                   token: data.token,
                   userId: data.userId
@@ -96,15 +99,12 @@ export default {
             }
             
             setTimeout(() => {
-
                 if(!auth) {
-                    // Limpa mensagem de erro
                     this.msg = null;                                   
                 } else {
                     // Redireciona para o dashboard
                     this.$router.push('dashboard');
                 }
-                
             }, 2000);
 
         })
@@ -125,6 +125,7 @@ export default {
         flex-direction: column;
     }
 
+    /* Container padrão dos inputs */
     .input-container {
         display: flex;
         flex-direction: column;

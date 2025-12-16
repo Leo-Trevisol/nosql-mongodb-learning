@@ -3,8 +3,7 @@
     <!-- Título da página -->
     <h1>Criar uma conta</h1>
 
-    <!-- Formulário reutilizável para cadastro de usuário -->
-    <!-- user vazio pois é um novo registro -->
+    <!-- Formulário de cadastro de usuário -->
     <UserForm
       :user="{}"
       page="register"
@@ -17,6 +16,7 @@
 import UserForm from '../components/UserForm'
 
 export default {
+    name: "Register",
     components: {
         UserForm
     }
@@ -24,13 +24,14 @@ export default {
 </script>
 
 <style scoped>
-.register {
-    text-align: center;
-    padding-top: 40px;
-    padding-bottom: 100px;
-}
+    /* Container principal da página de registro */
+    .register {
+        text-align: center;
+        padding-top: 40px;
+        padding-bottom: 100px;
+    }
 
-.register h1 {
-    margin-bottom: 40px;
-}
+    .register h1 {
+        margin-bottom: 40px;
+    }
 </style>
