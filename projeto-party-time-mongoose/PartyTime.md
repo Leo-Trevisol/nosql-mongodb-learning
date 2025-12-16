@@ -129,6 +129,58 @@
 
 <hr/>
 
+<hr/>
+
+<section id="screenshots">
+  <h2>🖼️ Screenshots da Aplicação</h2>
+
+  <p align="center">
+    <strong>Visão geral das principais telas do sistema Party Time</strong>
+  </p>
+
+  <h3>🏠 Home</h3>
+  <p align="center">
+    <img src="docs/screenshots/home.png" alt="Tela Home" width="800"/>
+  </p>
+
+  <h3>🔐 Login</h3>
+  <p align="center">
+    <img src="docs/screenshots/login.png" alt="Tela de Login" width="800"/>
+  </p>
+
+  <h3>📝 Cadastro</h3>
+  <p align="center">
+    <img src="docs/screenshots/register.png" alt="Tela de Cadastro" width="800"/>
+  </p>
+
+  <h3>📊 Dashboard</h3>
+  <p align="center">
+    <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="800"/>
+  </p>
+
+  <h3>🎉 Criar Festa</h3>
+  <p align="center">
+    <img src="docs/screenshots/new-party.png" alt="Criar Festa" width="800"/>
+  </p>
+
+  <h3>✏️ Editar Festa</h3>
+  <p align="center">
+    <img src="docs/screenshots/edit-party.png" alt="Editar Festa" width="800"/>
+  </p>
+
+  <h3>📄 Detalhes da Festa</h3>
+  <p align="center">
+    <img src="docs/screenshots/party-details.png" alt="Detalhes da Festa" width="800"/>
+  </p>
+
+  <h3>👤 Perfil do Usuário</h3>
+  <p align="center">
+    <img src="docs/screenshots/profile.png" alt="Perfil do Usuário" width="800"/>
+  </p>
+</section>
+
+<hr/>
+
 <section id="aprendizados">
   <h2>📚 Principais Aprendizados</h2>
   <ul>
