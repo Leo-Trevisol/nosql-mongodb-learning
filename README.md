@@ -2998,3 +2998,94 @@ getPessoa("Leonardo")
     que requer persistência estruturada.
   </p>
 </section>
+
+<section id="mongodb-atlas">
+  <h2>☁️ MongoDB Atlas – Banco de Dados na Nuvem</h2>
+  <p>
+    O <strong>MongoDB Atlas</strong> é o serviço oficial de <strong>Database as a Service (DBaaS)</strong> 
+    oferecido pela própria MongoDB Inc. Ele permite criar, gerenciar e escalar bancos de dados MongoDB 
+    diretamente na nuvem, sem a necessidade de instalar, configurar ou manter servidores manualmente.
+  </p>
+
+  <p>
+    Com o Atlas, o desenvolvedor pode focar totalmente no desenvolvimento da aplicação, enquanto 
+    a infraestrutura do banco de dados — como disponibilidade, segurança, backups e escalabilidade —
+    é gerenciada automaticamente pela plataforma.
+  </p>
+
+  <h3>🌍 Banco de dados MongoDB na nuvem</h3>
+  <p>
+    O MongoDB Atlas funciona sobre grandes provedores de nuvem como 
+    <strong>AWS</strong>, <strong>Google Cloud</strong> e <strong>Microsoft Azure</strong>, 
+    permitindo que o banco de dados fique hospedado próximo dos usuários finais, 
+    reduzindo latência e melhorando o desempenho da aplicação.
+  </p>
+
+  <h3>🚀 Principais vantagens do MongoDB Atlas</h3>
+  <ul>
+    <li><strong>Gerenciamento totalmente automatizado</strong>: não é necessário configurar servidores ou clusters.</li>
+    <li><strong>Alta disponibilidade</strong>: replicação automática de dados.</li>
+    <li><strong>Escalabilidade</strong>: aumenta ou reduz recursos conforme a demanda.</li>
+    <li><strong>Backups automáticos</strong>: proteção contra perda de dados.</li>
+    <li><strong>Monitoramento em tempo real</strong>: métricas de desempenho e uso.</li>
+    <li><strong>Segurança integrada</strong>: autenticação, criptografia e controle de acesso.</li>
+  </ul>
+
+  <h3>🔐 Segurança no MongoDB Atlas</h3>
+  <p>
+    A segurança é um dos pontos fortes do Atlas. Ele oferece diversas camadas de proteção,
+    garantindo que os dados estejam seguros tanto em repouso quanto em trânsito.
+  </p>
+
+  <ul>
+    <li>🔑 Autenticação com usuário e senha</li>
+    <li>🧾 Controle de acesso baseado em papéis (RBAC)</li>
+    <li>🔒 Criptografia dos dados em trânsito (TLS/SSL)</li>
+    <li>🔐 Criptografia dos dados em repouso</li>
+    <li>🌐 Whitelist de IPs para acesso ao cluster</li>
+  </ul>
+
+  <h3>🔗 Conectando uma aplicação ao MongoDB Atlas</h3>
+  <p>
+    O Atlas fornece uma <strong>string de conexão</strong> pronta, que pode ser usada
+    diretamente no backend da aplicação. No Party Time, essa conexão é feita utilizando
+    <strong>Node.js</strong> em conjunto com o <strong>Mongoose</strong>.
+  </p>
+
+  <pre><code>mongodb+srv://usuario:senha@cluster0.mongodb.net/party_time?retryWrites=true&w=majority
+</code></pre>
+
+  <p>
+    Essa abordagem facilita o deploy da aplicação, pois o banco de dados fica acessível
+    de qualquer ambiente autorizado, como máquinas locais, servidores de produção ou
+    plataformas de hospedagem.
+  </p>
+
+  <h3>🧪 Plano gratuito para estudos</h3>
+  <p>
+    O MongoDB Atlas oferece um plano gratuito (<strong>Free Tier</strong>) que é ideal
+    para projetos educacionais e de aprendizado. Esse plano permite criar clusters com
+    recursos limitados, mas suficientes para desenvolvimento, testes e estudos de NoSQL.
+  </p>
+
+  <ul>
+    <li>💸 Sem custo financeiro</li>
+    <li>📦 Ideal para projetos acadêmicos</li>
+    <li>⚙️ Recursos suficientes para CRUD e testes</li>
+    <li>🌱 Ótimo para aprender MongoDB na prática</li>
+  </ul>
+
+  <h3>📌 Uso do MongoDB Atlas no projeto Party Time</h3>
+  <p>
+    No projeto <strong>Party Time</strong>, o MongoDB Atlas é utilizado como banco de dados
+    principal da aplicação, armazenando usuários, eventos e imagens de forma flexível.
+    Essa escolha permite simular um ambiente real de produção, aproximando o projeto
+    acadêmico das práticas utilizadas no mercado.
+  </p>
+
+  <p>
+    A combinação do <strong>MongoDB Atlas</strong> com <strong>Node.js</strong>, 
+    <strong>Express</strong> e <strong>Mongoose</strong> torna o sistema escalável,
+    seguro e adequado para aplicações web modernas baseadas em arquitetura REST.
+  </p>
+</section>
