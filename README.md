@@ -3089,3 +3089,120 @@ getPessoa("Leonardo")
     seguro e adequado para aplicações web modernas baseadas em arquitetura REST.
   </p>
 </section>
+
+<section id="configuracao-mongodb-atlas">
+  <h2>⚙️ Configuração de um Projeto no MongoDB Atlas</h2>
+  <p>
+    Para utilizar o <strong>MongoDB Atlas</strong> em uma aplicação, é necessário criar
+    um projeto e um cluster na plataforma. Esse processo é simples, guiado e pode ser
+    realizado totalmente pela interface web do Atlas.
+  </p>
+
+  <h3>📝 Criando uma conta no MongoDB Atlas</h3>
+  <ol>
+    <li>Acesse o site oficial do MongoDB Atlas.</li>
+    <li>Crie uma conta gratuita utilizando e-mail ou autenticação via Google/GitHub.</li>
+    <li>Após o login, você será direcionado ao painel principal (Dashboard).</li>
+  </ol>
+
+  <h3>📁 Criando um novo projeto</h3>
+  <p>
+    Um <strong>projeto</strong> no MongoDB Atlas funciona como um contêiner lógico
+    que agrupa clusters, usuários e configurações de segurança.
+  </p>
+
+  <ol>
+    <li>No Dashboard, clique em <strong>New Project</strong>.</li>
+    <li>Defina um nome para o projeto (ex: <em>Party Time</em>).</li>
+    <li>Opcionalmente, adicione membros ao projeto.</li>
+    <li>Finalize a criação do projeto.</li>
+  </ol>
+
+  <h3>🧩 Criando um cluster MongoDB</h3>
+  <p>
+    O <strong>cluster</strong> é o ambiente onde os dados serão armazenados.
+    Para projetos educacionais, o plano gratuito é suficiente.
+  </p>
+
+  <ol>
+    <li>Clique em <strong>Build a Database</strong>.</li>
+    <li>Selecione o plano <strong>Free (M0)</strong>.</li>
+    <li>Escolha o provedor de nuvem (AWS, Google Cloud ou Azure).</li>
+    <li>Selecione a região mais próxima para melhor desempenho.</li>
+    <li>Defina um nome para o cluster.</li>
+    <li>Confirme a criação e aguarde o provisionamento.</li>
+  </ol>
+
+  <h3>👤 Criando um usuário de acesso ao banco</h3>
+  <p>
+    Para que a aplicação possa se conectar ao banco de dados, é necessário
+    criar um usuário com permissão de leitura e escrita.
+  </p>
+
+  <ol>
+    <li>Acesse a seção <strong>Database Access</strong>.</li>
+    <li>Clique em <strong>Add New Database User</strong>.</li>
+    <li>Defina um nome de usuário e senha.</li>
+    <li>Selecione a permissão <strong>Read and write to any database</strong>.</li>
+    <li>Salve o usuário.</li>
+  </ol>
+
+  <h3>🌐 Configurando acesso por IP</h3>
+  <p>
+    O MongoDB Atlas exige a liberação de IPs autorizados a acessar o cluster,
+    aumentando a segurança da aplicação.
+  </p>
+
+  <ol>
+    <li>Acesse a seção <strong>Network Access</strong>.</li>
+    <li>Clique em <strong>Add IP Address</strong>.</li>
+    <li>Para ambiente de desenvolvimento, utilize <code>0.0.0.0/0</code> (acesso global).</li>
+    <li>Confirme a configuração.</li>
+  </ol>
+
+  <p>
+    ⚠️ Em ambientes de produção, recomenda-se liberar apenas IPs específicos
+    para evitar acessos indevidos.
+  </p>
+
+  <h3>🔗 Obtendo a string de conexão</h3>
+  <p>
+    Após configurar o cluster, o usuário e o acesso por IP, o Atlas disponibiliza
+    uma <strong>string de conexão</strong> que será usada no backend da aplicação.
+  </p>
+
+  <ol>
+    <li>Acesse o cluster criado.</li>
+    <li>Clique em <strong>Connect</strong>.</li>
+    <li>Selecione <strong>Connect your application</strong>.</li>
+    <li>Copie a string de conexão gerada.</li>
+  </ol>
+
+  <pre><code>mongodb+srv://usuario:senha@cluster0.mongodb.net/party_time?retryWrites=true&w=majority
+</code></pre>
+
+  <h3>🧪 Integração com o backend</h3>
+  <p>
+    No backend, a string de conexão deve ser armazenada em uma variável de ambiente,
+    garantindo maior segurança e flexibilidade.
+  </p>
+
+  <pre><code>MONGODB_URI=mongodb+srv://usuario:senha@cluster0.mongodb.net/party_time
+</code></pre>
+
+  <p>
+    Essa variável é então utilizada pelo Mongoose para estabelecer a conexão com o banco:
+  </p>
+
+  <pre><code>mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("Conectado ao MongoDB Atlas!"))
+  .catch(err => console.error("Erro na conexão:", err));
+</code></pre>
+
+  <h3>✅ Resultado final</h3>
+  <p>
+    Após esses passos, o projeto estará corretamente configurado no MongoDB Atlas,
+    permitindo que a aplicação utilize um banco de dados NoSQL na nuvem de forma
+    segura, escalável e alinhada com práticas modernas de desenvolvimento.
+  </p>
+</section>
